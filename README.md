@@ -2,6 +2,10 @@
 
 `RAW/**/*.md`를 콘텐츠 원본으로 두고, `seraph-field-site`에서 정적 JSON을 생성해 GitHub Pages로 배포하는 개인 기술 블로그/포트폴리오 저장소다.
 
+배포 주소:
+
+- [https://echidnarezero.github.io/SeraphField/](https://echidnarezero.github.io/SeraphField/)
+
 ## 구성
 
 - `RAW/`
