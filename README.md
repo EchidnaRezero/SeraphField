@@ -1,6 +1,6 @@
 # YUKINET
 
-`RAW/**/*.md`를 콘텐츠 원본으로 두고, `seraph-field-site`에서 정적 JSON을 생성해 GitHub Pages로 배포하는 개인 기술 블로그/포트폴리오 저장소다.
+`RAW/**/*.md`를 콘텐츠 원본으로 두고, `seraph-field-site`에서 정적 JSON을 생성해 GitHub Pages로 배포하는 개인 기술 블로그.
 
 배포 주소:
 
@@ -14,6 +14,14 @@
   - React + Vite 기반 정적 사이트
 - `.github/workflows/deploy-blog.yml`
   - GitHub Pages 배포 워크플로
+
+## 기술 스택
+
+- Frontend: `React 19`, `TypeScript`, `Vite 6`
+- Styling/UI: `Tailwind CSS 4`, `Motion`, `Lucide React`
+- Content: `gray-matter`, `react-markdown`, `remark-math`, `rehype-katex`, `react-syntax-highlighter`
+- Testing: `Vitest`
+- Deploy: `GitHub Pages`, `GitHub Actions`
 
 ## 사용법
 
