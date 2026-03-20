@@ -17,6 +17,7 @@
 
 ## 기술 스택
 
+- Runtime/Tooling: `Node.js 24`
 - Frontend: `React 19`, `TypeScript`, `Vite 6`
 - Styling/UI: `Tailwind CSS 4`, `Motion`, `Lucide React`
 - Content: `gray-matter`, `react-markdown`, `remark-math`, `rehype-katex`, `react-syntax-highlighter`
@@ -26,6 +27,10 @@
 ## 사용법
 
 Windows 기준:
+
+권장 버전:
+
+- `Node.js 24`
 
 1. `seraph-field-site`로 이동
 2. `npm install`
