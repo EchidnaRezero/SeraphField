@@ -3,6 +3,8 @@ build/
 dist/
 src/generated/*.json
 coverage/
+test-results/
+.devserver.log*
 .DS_Store
 *.log
 .env*

@@ -1,4 +1,4 @@
-# YUKINET
+# Seraph Field
 
 `RAW/**/*.md`를 콘텐츠 원본으로 두고, `seraph-field-site`에서 정적 JSON을 생성해 GitHub Pages로 배포하는 개인 기술 블로그.
 
