@@ -18,7 +18,7 @@
 ## 기술 스택
 
 - Runtime/Tooling: `Node.js 24`
-- Frontend: `React 19`, `TypeScript`, `Vite 6`
+- Frontend: `React 19`, `TypeScript`, `Vite 8`
 - Styling/UI: `Tailwind CSS 4`, `Motion`, `Lucide React`
 - Content: `gray-matter`, `react-markdown`, `remark-math`, `rehype-katex`, `react-syntax-highlighter`
 - Testing: `Vitest`
