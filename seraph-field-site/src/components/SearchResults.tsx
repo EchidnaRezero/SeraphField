@@ -1,0 +1,161 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import { ArrowLeft, Search, Tag } from 'lucide-react';
+import { motion } from 'motion/react';
+import { posts, searchIndex } from '../data/content';
+import { Category } from '../types';
+import { CATEGORY_ICON_MAP } from '../config/categories';
+import { searchPosts } from '../lib/search';
+
+interface SearchResultsProps {
+  onBack: () => void;
+  initialQuery: string;
+  onOpenPost: (category?: Category, slug?: string) => void;
+  onSearch: (query: string) => void;
+}
+
+export const SearchResults: React.FC<SearchResultsProps> = ({
+  onBack,
+  initialQuery,
+  onOpenPost,
+  onSearch,
+}) => {
+  const [query, setQuery] = useState(initialQuery);
+
+  useEffect(() => {
+    setQuery(initialQuery);
+  }, [initialQuery]);
+
+  const searchResult = useMemo(() => searchPosts(posts, searchIndex, query), [query]);
+  const parsedQuery = searchResult.parsedQuery;
+  const matchedPosts = searchResult.matchedPosts;
+
+  return (
+    <div className="relative min-h-[100dvh] w-full overflow-x-hidden bg-hud-bg font-ui text-[#e0fbfc]">
+      <div className="relative z-10 flex min-h-[100dvh] flex-col p-4 md:h-screen md:min-h-0 md:p-8">
+        <header className="mb-4 flex flex-col gap-4 pb-4 md:pb-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-4 md:gap-6">
+            <button
+              onClick={onBack}
+              className="rounded-full border border-neon-cyan/20 p-2 transition-colors group hover:bg-neon-cyan/10"
+            >
+              <ArrowLeft className="h-5 w-5 text-neon-cyan/60 group-hover:text-neon-cyan" />
+            </button>
+            <div>
+              <div className="text-[10px] font-mono uppercase tracking-[0.36em] text-neon-cyan/60">
+                Search_Control
+              </div>
+              <h1 className="text-3xl font-bold uppercase tracking-wider text-neon-cyan/88 md:text-4xl">
+                Search Results
+              </h1>
+            </div>
+          </div>
+          <div className="text-[10px] font-mono uppercase tracking-[0.22em] text-neon-cyan/45 lg:text-right">
+            {matchedPosts.length} matches
+          </div>
+        </header>
+
+        <div className="mb-6 border border-neon-cyan/22 bg-black/34 p-4 backdrop-blur-md md:p-5">
+          <div className="group/search relative max-w-3xl">
+            <input
+              type="text"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  onSearch(query);
+                }
+              }}
+              placeholder="SEARCH_KEYWORD or #TAG1 and #TAG2 / #TAG1 or #TAG2"
+              className="w-full border border-neon-cyan/35 bg-neon-cyan/10 px-4 py-3 pr-12 text-base font-mono text-neon-cyan placeholder:text-neon-cyan/35 transition-all focus:border-neon-cyan/75 focus:outline-none"
+            />
+            <button
+              type="button"
+              onClick={() => onSearch(query)}
+              className="absolute right-3 top-1/2 -translate-y-1/2"
+              aria-label="search documents"
+            >
+              <Search className="h-4 w-4 text-neon-cyan/55 transition-colors group-focus-within/search:text-neon-cyan" />
+            </button>
+          </div>
+          <div className="mt-3 text-[10px] font-mono uppercase tracking-[0.16em] text-white/46">
+            {parsedQuery.mode === 'tag'
+              ? `Tag Search / ${parsedQuery.operator === 'or' ? 'Union' : 'Intersection'}`
+              : 'Keyword Search / Title + Tag + Body'}
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-hidden border border-neon-cyan/20 bg-black/30 backdrop-blur-md">
+          <div className="custom-scrollbar h-full overflow-y-auto px-4 py-4 md:px-6">
+            {matchedPosts.length === 0 ? (
+              <div className="flex h-full flex-col items-center justify-center text-center text-white/28">
+                <Search className="mb-4 h-12 w-12 text-neon-cyan/35" />
+                <div className="text-xl uppercase tracking-[0.26em]">No Search Match</div>
+                <div className="mt-2 text-sm text-white/24">
+                  키워드 검색 또는 `#tag1 and #tag2`, `#tag1 or #tag2` 형식으로 다시 검색해보세요.
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {matchedPosts.map((post, index) => {
+                  const CategoryIcon = CATEGORY_ICON_MAP[post.category];
+
+                  return (
+                    <motion.button
+                      key={post.id}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.03 }}
+                      onClick={() => onOpenPost(post.category, post.slug)}
+                      className="w-full border border-neon-cyan/14 bg-neon-cyan/[0.02] px-4 py-4 text-left transition-colors hover:bg-neon-cyan/[0.05] md:px-6 md:py-5"
+                    >
+                      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                        <div className="min-w-0">
+                          <div className="mb-2 flex items-center gap-3">
+                            <CategoryIcon className="h-4 w-4 text-neon-cyan/78" />
+                            <span className="text-[10px] font-mono uppercase tracking-[0.24em] text-neon-cyan/68">
+                              {post.category}
+                            </span>
+                            <span className="text-[10px] font-mono text-neon-cyan/42">
+                              {post.date.replace(/-/g, '.')}
+                            </span>
+                          </div>
+                          <div className="mb-2 text-xl font-bold tracking-tight text-[rgba(246,252,255,0.94)] md:text-2xl">
+                            {post.title}
+                          </div>
+                          <div className="line-clamp-2 text-sm leading-relaxed text-white/66">{post.summary}</div>
+                        </div>
+                        <div className="flex max-w-full flex-wrap justify-start gap-2 lg:max-w-xs lg:justify-end">
+                          {post.tags.map((tag) => (
+                            <span
+                              key={`${post.id}-${tag}`}
+                              className="inline-flex items-center gap-1 border border-neon-cyan/22 px-2 py-1 text-[10px] font-mono text-neon-cyan/72"
+                            >
+                              <Tag className="h-3 w-3" />
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(0, 229, 255, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: var(--color-neon-cyan);
+        }
+      `}</style>
+    </div>
+  );
+};

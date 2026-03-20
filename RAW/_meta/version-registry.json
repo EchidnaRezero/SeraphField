@@ -1,0 +1,16 @@
+{
+  "versions": {
+    "sd-scripts": {
+      "library": "sd-scripts",
+      "version": "0.10.1",
+      "date": "2026-03-20",
+      "url": "https://github.com/kohya-ss/sd-scripts"
+    },
+    "comfyui": {
+      "library": "ComfyUI",
+      "version": "0.17.2",
+      "date": "2026-03-20",
+      "url": "https://github.com/comfyanonymous/ComfyUI"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+# OS / editor
+Thumbs.db
+Desktop.ini
+.DS_Store
+.idea/
+.vscode/
+
+# Root local artifacts
+*.log
+test/
+
+# Frontend dependencies / build outputs
+seraph-field-site/node_modules/
+seraph-field-site/dist/
+seraph-field-site/coverage/
+seraph-field-site/.vite/
+
+# Generated content
+seraph-field-site/src/generated/posts.json
+seraph-field-site/src/generated/search-index.json
+
+# Environment files
+seraph-field-site/.env
+seraph-field-site/.env.*
+!seraph-field-site/.env.example
