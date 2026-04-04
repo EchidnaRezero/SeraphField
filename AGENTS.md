@@ -3,6 +3,15 @@
 - To help Korean-speaking users understand the same guidance, create matching `_KR` files with the same meaning.
 - Because the English and `_KR` files should say the same thing, don't need to read `_KR` files for AI work unless the task is to sync them.
 
+## Document categories
+- Split repository documents into two groups and keep the boundary explicit.
+- Project documents describe repository rules, workflows, structure, or tooling.
+  - Typical examples: `AGENTS.md`, `AGENTS_KR.md`, `README.md`, `docs/**/*.md`, `skills/**/SKILL.md`, `skills/**/SKILL_KR.md`
+- Content documents are publishable study or portfolio content about the subject matter itself.
+  - Typical examples: `DRAFT/**/*.md`, `RAW/THEORY/**/*.md`, `RAW/PAPER/**/*.md`, `RAW/REPO/**/*.md`, `RAW/IMPLEMENT/**/*.md`
+- Do not explain project workflow rules inside content documents unless a public-facing content rule specifically requires it.
+- Do not treat project-document guidance as if it were part of the subject-matter content.
+
 ## Local project settings
 - If the project root already has a gitignored `local.settings.json`, treat its recorded security level and Git account choice as the user's prior project-level decision.
 - Ask the user again only when that file is missing, incomplete, or conflicts with the current instruction.

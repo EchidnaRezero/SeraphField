@@ -28,35 +28,25 @@
 
 Windows 기준:
 
-권장 버전:
-
-- `Node.js 24`
-
-1. `seraph-field-site`로 이동
+1. `cd seraph-field-site`
 2. `npm install`
 3. `npm run dev`
 
-내용만 바꿨을 때:
+내용 Markdown만 추가하거나 수정했을 때:
 
-쉽게 말하면, Markdown 원본이 사이트에 들어갈 수 있는지 먼저 확인하면 됩니다.
-
-1. `seraph-field-site`로 이동
+1. `cd seraph-field-site`
 2. `npm run content:build`
 
-이 명령은 `RAW/**/*.md`를 읽어 사이트에서 쓰는 JSON을 다시 만듭니다.
+사이트 코드를 수정했을 때:
 
-코드도 같이 바꿨을 때:
-
-쉽게 말하면, 타입 검사와 테스트, 빌드까지 같이 통과하는지 봅니다.
-
-1. `seraph-field-site`로 이동
+1. `cd seraph-field-site`
 2. `npm run lint`
 3. `npm test`
 4. `npm run build`
 
 ## 콘텐츠 파이프라인
 
-이 프로젝트의 문서는 한 번에 `RAW/`로 바로 가지 않습니다. 거친 초안, Git으로 추적하는 작업중 문서, 최종 게시 원본을 나눠서 관리합니다.
+콘텐츠 원본은 `SCRATCH/`, `DRAFT/`, `RAW/`로 나눠 관리합니다.
 
 ```mermaid
 flowchart LR
