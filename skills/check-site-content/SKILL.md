@@ -73,22 +73,11 @@ For math notation and rendering details, also use `write-math-notation`.
 
 ### Mermaid
 
-Mermaid is supported only through fenced code blocks whose language is exactly `mermaid`.
+For shared diagram rules, also use `write-diagrams-and-visualizations`.
 
-Use:
+The site supports Mermaid only through fenced code blocks whose language is exactly `mermaid`.
 
-````
-```mermaid
-flowchart TD
-    A["Start"] --> B["Next"]
-```
-````
-
-Do not use:
-
-- indented Mermaid blocks
-- raw HTML wrappers around Mermaid text
-- alternate diagram syntaxes that are not fenced as `mermaid`
+Keep content Markdown diagrams structural. If a diagram would need dense formulas or long caveats inside the boxes, move those formulas into nearby prose or display math and keep the diagram itself short.
 
 ## Heading And TOC Rules
 
@@ -144,7 +133,8 @@ Use raw HTML only when there is no equivalent supported Markdown form and the us
 Before saving a document that uses richer Markdown, check these points:
 
 - Does the frontmatter still satisfy the parser contract?
-- Are all diagrams fenced as `mermaid`?
+- If the document contains diagrams, has `write-diagrams-and-visualizations` been applied?
+- Are all Mermaid diagrams fenced as `mermaid`?
 - Are all tables written in GFM table syntax instead of ad hoc spacing?
 - Are TOC-worthy sections written as `##` headings?
 - Are task lists written with GFM checkbox syntax?

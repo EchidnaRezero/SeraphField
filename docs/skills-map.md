@@ -2,26 +2,33 @@
 
 이 문서는 이 프로젝트 안에서 직접 관리하는 스킬이 무엇이고, 어떤 순서와 관계로 쓰이는지 정리합니다.
 
-## 큰 구조
+## 직접 위임 구조
 
 ```mermaid
 flowchart LR
     SCRATCH["scratch-to-raw-pipeline"] --> COMMON["write-raw-content-common"]
     SCRATCH --> MATH["write-math-notation"]
+    SCRATCH --> DIAGRAMS["write-diagrams-and-visualizations"]
     SCRATCH --> CHECKCONTENT["check-site-content"]
+    PUBLISH["publish-site-content-pipeline"]
 
     COMMON --> THEORY["write-raw-content-theory"]
     COMMON --> PAPER["write-raw-content-paper"]
     COMMON --> REPO["write-raw-content-repo"]
     COMMON --> IMPLEMENT["write-raw-content-implement"]
 
-    SCRATCH --> PUBLISH["publish-site-content-pipeline"]
     PUBLISH --> CHECKCONTENT
     PUBLISH --> MATH
-    PUBLISH --> CHECKUI["check-site-ui-code"]
+    PUBLISH --> DIAGRAMS
+    THEORY --> DIAGRAMS
+    CHECKCONTENT --> DIAGRAMS
+    MATH --> DIAGRAMS
 
     CREATE["create-project-skill"] --> NEW["new or revised project skill"]
 ```
+
+- 이 그림의 화살표는 한 스킬이 다른 스킬을 직접 참조하거나 직접 위임할 때만 그립니다.
+- 작업 순서나 사람이 보통 밟는 흐름은 이 그림에 섞지 않습니다.
 
 ## 역할별 정리
 
@@ -48,7 +55,9 @@ flowchart LR
 ## 3. 보조 스킬
 
 - `write-math-notation`
-  - 본문 수식, Mermaid 라벨, 표 셀 안 수학 표기를 어떻게 쓰는지 정리합니다.
+  - 본문 수식과 표 셀 안 수학 표기를 어떻게 쓰는지 정리합니다.
+- `write-diagrams-and-visualizations`
+  - 다이어그램과 시각화의 공통 계약을 정하고, 어느 세부 스킬에서 구체 규칙을 봐야 하는지 안내합니다.
 - `check-site-content`
   - `RAW/**/*.md`가 사이트에서 깨지지 않고 빌드되는지 확인합니다.
 - `check-site-ui-code`
@@ -66,11 +75,8 @@ flowchart LR
 ```mermaid
 flowchart LR
     A["초안"] --> B["scratch-to-raw-pipeline"]
-    B --> C["write-raw-content-common"]
-    C --> D["category skill"]
-    D --> E["write-math-notation (필요시)"]
-    E --> F["check-site-content"]
-    F --> G["publish-site-content-pipeline"]
+    B --> C["RAW 문서 완성"]
+    C --> D["publish-site-content-pipeline"]
 ```
 
 ### 사이트 코드 수정
@@ -82,7 +88,10 @@ flowchart LR
 
 ## 현재 기준에서 기억할 점
 
+- `직접 위임 구조`와 `작업 흐름`은 다른 그림으로 봅니다.
+- 한 그림 안에서는 직접 위임과 작업 순서를 섞지 않습니다.
 - `THEORY`는 세부 기준이 가장 많이 정리된 상태입니다.
 - `PAPER`, `REPO`, `IMPLEMENT`는 공통 골격은 있지만, `THEORY`만큼 세부 예시와 고정 규칙이 많지는 않습니다.
 - 수식 표기 규칙은 `write-math-notation` 한 곳을 원본으로 보고, 다른 스킬에서는 필요할 때 그 스킬을 참조합니다.
+- 다이어그램과 시각화는 `write-diagrams-and-visualizations`에서 공통 계약을 보고, Mermaid 세부 규칙은 해당 세부 스킬에서 봅니다.
 - 사이트 렌더링 검사는 `check-site-content`, 사이트 UI 코드는 `check-site-ui-code`로 나눕니다.

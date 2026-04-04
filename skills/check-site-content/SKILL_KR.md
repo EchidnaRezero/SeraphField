@@ -70,22 +70,11 @@
 
 ### Mermaid
 
-Mermaid는 language가 정확히 `mermaid`인 fenced code block에서만 지원합니다.
+공통 다이어그램 규칙은 `write-diagrams-and-visualizations`을 같이 봅니다.
 
-사용 예:
+사이트는 language가 정확히 `mermaid`인 fenced code block에서만 Mermaid를 지원합니다.
 
-````
-```mermaid
-flowchart TD
-    A["시작"] --> B["다음"]
-```
-````
-
-쓰지 않는 것:
-
-- 들여쓰기만 한 Mermaid 텍스트
-- Mermaid를 raw HTML로 감싸는 방식
-- `mermaid` fenced block이 아닌 다른 방식
+콘텐츠 Markdown 안의 다이어그램은 구조를 보여 주는 수준으로 유지합니다. 박스 안에 조밀한 수식이나 긴 예외 설명이 많이 들어가야 하면, 수식은 prose나 블록 수식으로 옮기고 다이어그램은 짧게 둡니다.
 
 ## heading과 TOC 규칙
 
@@ -141,7 +130,8 @@ flowchart TD
 조금 복잡한 Markdown을 저장하기 전에 아래를 확인합니다.
 
 - frontmatter가 파서 계약과 맞는가?
-- 다이어그램이 모두 ` ```mermaid ` fenced block인가?
+- 문서에 다이어그램이 있다면 `write-diagrams-and-visualizations`을 적용했는가?
+- Mermaid 다이어그램이 모두 ` ```mermaid ` fenced block인가?
 - 표가 spacing 흉내가 아니라 GFM 표 문법인가?
 - TOC에 보여야 하는 섹션이 `##`인가?
 - 체크리스트가 GFM checkbox 문법인가?

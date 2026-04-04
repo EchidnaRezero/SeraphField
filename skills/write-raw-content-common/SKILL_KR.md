@@ -24,6 +24,7 @@
 
 frontmatter, `content:build`, 표, Mermaid, TOC 같은 콘텐츠 점검이 중요하면 `check-site-content`도 같이 봅니다.
 수식 표기나 수식 렌더링 점검이 중요하면 `write-math-notation`도 같이 봅니다.
+Mermaid나 다른 시각화 구조를 Markdown에 넣는 작업이면 `write-diagrams-and-visualizations`도 같이 봅니다.
 
 ## 섞인 RAW 초안을 주된 목적 기준으로 분류하기
 

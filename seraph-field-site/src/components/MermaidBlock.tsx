@@ -55,10 +55,9 @@ const ensureMermaid = async () => {
 
 interface MermaidBlockProps {
   chart: string;
-  title: string;
 }
 
-export const MermaidBlock: React.FC<MermaidBlockProps> = ({ chart, title }) => {
+export const MermaidBlock: React.FC<MermaidBlockProps> = ({ chart }) => {
   const [svg, setSvg] = useState('');
   const [error, setError] = useState<string | null>(null);
   const uniqueId = useId().replace(/:/g, '');
@@ -101,7 +100,7 @@ export const MermaidBlock: React.FC<MermaidBlockProps> = ({ chart, title }) => {
     return (
       <div className="code-wrapper">
         <div className="code-header">
-          <span>{title}</span>
+          <span>Mermaid Diagram</span>
           <span>[MERMAID ERROR]</span>
         </div>
         <pre className="mermaid-error">{chart}</pre>
@@ -111,10 +110,6 @@ export const MermaidBlock: React.FC<MermaidBlockProps> = ({ chart, title }) => {
 
   return (
     <div className="mermaid-wrapper">
-      <div className="code-header">
-        <span>{title}</span>
-        <span>[FLOWCHART]</span>
-      </div>
       <div
         className="mermaid-surface"
         // Mermaid returns sanitized SVG markup.

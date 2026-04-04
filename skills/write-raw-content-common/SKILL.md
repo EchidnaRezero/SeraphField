@@ -26,6 +26,7 @@ After deciding the split, also use the matching category skill:
 
 Use `check-site-content` when content checks involve frontmatter, `content:build`, tables, Mermaid, or TOC behavior.
 Use `write-math-notation` when content checks involve mathematical notation or math rendering.
+Use `write-diagrams-and-visualizations` when authoring Mermaid diagrams or other explanatory visual structures in Markdown.
 
 ## Classify Mixed RAW Drafts By Dominant Purpose
 

@@ -33,17 +33,19 @@
 1. 먼저 RAW 내용이 이미 최종 상태인지 확인합니다.
    - 아직 초안 단계면 먼저 `scratch-to-raw-pipeline`을 사용합니다.
 2. 가능하면 `local.settings.json`에서 로컬 게시 설정을 읽습니다.
-3. `check-site-content`를 적용합니다.
-4. 바뀐 콘텐츠에 수식이 있으면 `write-math-notation`도 적용합니다.
-5. 아래 순서로 로컬 검증을 실행합니다.
-   - `npm run content:build`
-   - `npm run lint`
-   - `npm test`
-   - `npm run build`
-6. 이 저장소에서 첫 commit 또는 push 전에는, 선택한 로컬 Git 계정 매핑에 따라 repo-local `user.name`, `user.email`을 설정합니다.
-7. 로컬 검증이 다 통과한 뒤에만 commit 합니다.
-8. 브랜치를 push 합니다.
-9. 저장소에 CI/CD가 설정되어 있으면 push 뒤 workflow 또는 배포 상태를 확인합니다.
+3. 공개 안전 검토와 저장소 규칙 검토를 `AGENTS.md` 기준으로 합니다.
+4. `check-site-content`를 적용합니다.
+5. 바뀐 콘텐츠에 수식이 있으면 `write-math-notation`도 적용합니다.
+6. 바뀐 콘텐츠에 다이어그램이나 다른 시각화 구조가 있으면 `write-diagrams-and-visualizations`도 적용합니다.
+7. 아래 순서로 로컬 검증을 실행합니다.
+  - `npm run content:build`
+  - `npm run lint`
+  - `npm test`
+  - `npm run build`
+8. 이 저장소에서 첫 commit 또는 push 전에는, 선택한 로컬 Git 계정 매핑에 따라 repo-local `user.name`, `user.email`을 설정합니다.
+9. 로컬 검증이 다 통과한 뒤에만 commit 합니다.
+10. 브랜치를 push 합니다.
+11. 저장소에 CI/CD가 설정되어 있으면 push 뒤 workflow 또는 배포 상태를 확인합니다.
 
 ## Git 규칙
 
@@ -63,8 +65,10 @@
 
 - 이 스킬을 쓰기 전에 콘텐츠 자체가 이미 확정됐는지 확인합니다.
 - 가능하면 `local.settings.json`을 기준으로 썼는지 확인합니다.
+- 관련 `AGENTS.md`의 공개 안전과 저장소 규칙을 확인했는지 확인합니다.
 - `check-site-content`를 적용했는지 확인합니다.
 - 수식이 있으면 `write-math-notation`을 적용했는지 확인합니다.
+- 다이어그램이나 다른 시각화 구조가 있으면 `write-diagrams-and-visualizations`을 적용했는지 확인합니다.
 - commit 전 로컬 검증이 전부 통과했는지 확인합니다.
 - commit 또는 push 전에 repo-local Git identity를 설정했는지 확인합니다.
 - push가 끝났는지 확인합니다.

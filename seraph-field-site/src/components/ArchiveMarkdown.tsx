@@ -147,7 +147,7 @@ export const ArchiveMarkdown: React.FC<ArchiveMarkdownProps> = ({
               const fileName = language ? `/// ${post.id}.${language === 'python' ? 'py' : language}` : '/// snippet';
 
               if (!inline && language === 'mermaid') {
-                return <MermaidBlock chart={String(children).replace(/\n$/, '')} title={fileName} />;
+                return <MermaidBlock chart={String(children).replace(/\n$/, '')} />;
               }
 
               return !inline && language ? (

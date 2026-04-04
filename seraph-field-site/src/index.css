@@ -154,6 +154,27 @@
   text-transform: none;
 }
 
+.markdown-body h3 {
+  font-family: var(--font-ui), sans-serif;
+  font-size: clamp(1.15rem, 2vw, 1.7rem);
+  font-weight: 700;
+  color: rgba(224, 251, 252, 0.96);
+  margin-top: 1.6rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.05;
+  text-transform: none;
+}
+
+.markdown-body h4 {
+  font-family: var(--font-body), sans-serif;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: rgba(224, 251, 252, 0.88);
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
 .markdown-body p {
   @apply mb-6 font-body font-light text-[1.05rem] leading-[1.8] text-[#c9e4e5];
   word-break: keep-all;
@@ -566,7 +587,7 @@
 }
 
 .mermaid-surface {
-  padding: 1rem;
+  padding: 1.25rem 1rem;
   overflow-x: auto;
   background:
     linear-gradient(180deg, rgba(25, 184, 190, 0.05), rgba(0, 0, 0, 0)),
@@ -576,6 +597,12 @@
 .mermaid-surface svg {
   min-width: 100%;
   height: auto;
+}
+
+.mermaid-surface .label,
+.mermaid-surface .nodeLabel,
+.mermaid-surface .edgeLabel {
+  font-family: var(--font-body), sans-serif !important;
 }
 
 .mermaid-error {

@@ -36,17 +36,19 @@ This skill should orchestrate existing content-writing and checking skills inste
 1. Confirm the RAW content is already finalized.
    - If the draft is not finalized yet, use `scratch-to-raw-pipeline` first.
 2. Load local publish settings from `local.settings.json` when available.
-3. Apply `check-site-content`.
-4. If the changed content includes math, also apply `write-math-notation`.
-5. Run local verification in this order:
+3. Check public-safety and repository-facing content rules against `AGENTS.md`.
+4. Apply `check-site-content`.
+5. If the changed content includes math, also apply `write-math-notation`.
+6. If the changed content includes diagrams or other visual structures, also apply `write-diagrams-and-visualizations`.
+7. Run local verification in this order:
    - `npm run content:build`
    - `npm run lint`
    - `npm test`
    - `npm run build`
-6. Before the first commit or push for this repository, set repo-local `user.name` and `user.email` from the chosen local Git account mapping.
-7. Commit only after the local checks pass.
-8. Push the branch.
-9. If the repository has CI/CD configured, check the resulting workflow or deploy status after push.
+8. Before the first commit or push for this repository, set repo-local `user.name` and `user.email` from the chosen local Git account mapping.
+9. Commit only after the local checks pass.
+10. Push the branch.
+11. If the repository has CI/CD configured, check the resulting workflow or deploy status after push.
 
 ## Git Rule
 
@@ -66,8 +68,10 @@ This skill should orchestrate existing content-writing and checking skills inste
 
 - confirm the content itself was already finalized before using this skill
 - confirm `local.settings.json` was used when available
+- confirm the relevant `AGENTS.md` safety and repository rules were checked
 - confirm `check-site-content` was applied
 - confirm `write-math-notation` was applied when math is present
+- confirm `write-diagrams-and-visualizations` was applied when diagrams or other visual structures are present
 - confirm all local checks passed before commit
 - confirm repo-local Git identity was set before commit or push
 - confirm push completed

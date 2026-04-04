@@ -31,14 +31,15 @@
    - 외부 코드 독해 초안
    - 구현/실험 메모
 2. 현재 원본이 `SCRATCH/`, `DRAFT/`, `RAW/` 중 어디에 있어야 하는 상태인지 먼저 판단합니다.
-3. 어떤 파일이 `DRAFT/`로 올라가기 전에는, 공개 안전, frontmatter, 링크, 파서 호환 저장소 규칙에 대해 먼저 `AGENTS.md`를 적용합니다.
+3. 어떤 파일이 `DRAFT/`로 올라가기 전에는, 공개 안전 검토와 저장소 규칙 검토를 `AGENTS.md` 기준으로 먼저 합니다.
 4. 이 초안을 한 문서로 둘지, 여러 최종 문서로 나눌지 결정합니다.
 5. 최종 문서마다 RAW 카테고리를 정합니다.
    - 내용이 분명한 수학과 스타일의 이론 노트면 `write-raw-content-theory`를 적용합니다.
    - `PAPER`, `REPO`, `IMPLEMENT`는 아직 여기서 같은 수준으로 고정된 기준을 들고 있지 않으니, 사용자의 지시를 따릅니다.
 6. 최종 문서 묶음 전체에는 `write-raw-content-common`을 적용합니다.
 7. 문서에 수식 표기가 있으면 `write-math-notation`도 같이 적용합니다.
-8. 마무리 전에 `check-site-content`를 적용합니다.
+8. 문서에 다이어그램이나 다른 시각화 구조가 있으면 `write-diagrams-and-visualizations`도 같이 적용합니다.
+9. 마무리 전에 `check-site-content`를 적용합니다.
 
 ## 분리 규칙
 
@@ -60,7 +61,7 @@
 ## 출력 규칙
 
 - 거친 private 재료는 추적 가능한 초안이 되기 전까지 `SCRATCH/`에 둡니다.
-- 개인식별 정보, 로컬 경로, private 메모 같은 공개 위험 요소를 지운 뒤에만 `DRAFT/`로 올립니다.
+- `AGENTS.md`의 공개 안전 기준을 통과한 뒤에만 `DRAFT/`로 올립니다.
 - 추적하지만 아직 사이트에는 게시하지 않는 작업중 문서는 `DRAFT/`에 둡니다.
 - 최종 문서는 맞는 `RAW/` 카테고리 경로 아래에 저장합니다.
 - 변경 설명이나 전후 비교가 아니라 최종 내용만 씁니다.
@@ -74,4 +75,5 @@
 - `write-raw-content-common`을 적용했는지 확인합니다.
 - 분명한 이론 문서라면 `write-raw-content-theory`를 적용했는지 확인합니다.
 - 문서에 수식이 있다면 `write-math-notation`을 적용했는지 확인합니다.
+- 문서에 다이어그램이나 다른 시각화 구조가 있으면 `write-diagrams-and-visualizations`을 적용했는지 확인합니다.
 - 마무리 전에 `check-site-content`를 적용했는지 확인합니다.

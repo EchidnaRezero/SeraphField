@@ -31,12 +31,12 @@ Keep `SKILL_KR.md` synchronized whenever the substantive instructions in this fi
 
 ## Math Explanation Guidelines
 
-- For math-heavy notes, follow `DRAFT/수학지침.md`.
 - State assumptions, prerequisites, and logical status explicitly.
 - When needed, fix an ambient setting and place sets, spaces, structures, and maps inside it. The overall-picture diagram should then be drawn from the objects and maps in that ambient setting, using inclusion maps or forgetful maps as appropriate.
 - State the domain and codomain of every map.
 - Use standard mathematical notation by default. If there is no widely used standard notation, do not force an ad hoc symbolic shorthand unless the user explicitly asks for one.
 - For Markdown math syntax and rendering details, also use `write-math-notation`.
+- For shared diagram-selection rules that also apply outside THEORY notes, also use `write-diagrams-and-visualizations`.
 
 ## Overall Picture
 
