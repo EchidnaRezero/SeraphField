@@ -54,15 +54,6 @@ Windows 기준:
 3. `npm test`
 4. `npm run build`
 
-배포 전 확인:
-
-쉽게 말하면, 이 README는 빠른 시작만 설명하고, 실제 게시 전 최종 확인 절차는 전용 스킬 문서를 기준으로 보면 됩니다.
-
-- 콘텐츠만 바뀌었으면 먼저 `npm run content:build`
-- UI 코드가 바뀌었으면 `npm run lint`, `npm test`, `npm run build`
-- 커밋, 푸시, CI/CD까지 포함한 최종 게시 절차는 `skills/publish-site-content-pipeline/SKILL.md`를 기준으로 확인
-- 빌드 결과물은 `seraph-field-site/dist/`에 생성
-
 ## 콘텐츠 파이프라인
 
 이 프로젝트의 문서는 한 번에 `RAW/`로 바로 가지 않습니다. 거친 초안, Git으로 추적하는 작업중 문서, 최종 게시 원본을 나눠서 관리합니다.
