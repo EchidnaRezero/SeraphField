@@ -49,9 +49,26 @@ Windows 기준:
 
 ## 문서
 
+- [docs/README.md](./docs/README.md)
+  - 운영 설명서 목록
+- [docs/local-usage.md](./docs/local-usage.md)
+  - 로컬 실행, 검증, 빌드 순서
+- [docs/content-pipeline.md](./docs/content-pipeline.md)
+  - `SCRATCH/`, `DRAFT/`, `RAW/` 흐름
+- [docs/site-architecture.md](./docs/site-architecture.md)
+  - 현재 사이트 구조와 데이터 흐름
+- [docs/search.md](./docs/search.md)
+  - 검색 모듈과 검색 범위
+- [docs/skills-map.md](./docs/skills-map.md)
+  - 프로젝트 스킬 구조와 관계
 - [SITE_SPEC.md](./SITE_SPEC.md)
-  - 현재 구조, 데이터 흐름, 변경 지점 정리
+  - 과거 구조 메모와 변경 지점 기록
 - [AGENTS.md](./AGENTS.md)
   - 저장소 작업 규칙과 RAW 작성 제약
-- `skills/seraph-field-raw-authoring/SKILL.md`
-  - `RAW/**/*.md` 작성/수정용 로컬 워크플로
+- `skills/write-raw-content-common/SKILL.md`
+  - `RAW/**/*.md` 공통 작성 규칙과 초안 분해 기준
+- `skills/write-raw-content-theory/SKILL.md`
+- `skills/write-raw-content-paper/SKILL.md`
+- `skills/write-raw-content-repo/SKILL.md`
+- `skills/write-raw-content-implement/SKILL.md`
+  - 카테고리별 세부 작성 규칙

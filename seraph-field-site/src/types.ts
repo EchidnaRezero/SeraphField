@@ -1,7 +1,7 @@
 export type Category = 'THEORY' | 'REPO' | 'PAPER' | 'IMPLEMENT';
 export type AppView = 'lobby' | 'archive' | 'references' | 'search' | 'profile';
 export type SearchQueryOperator = 'keyword' | 'and' | 'or';
-export type SearchQueryMode = 'keyword' | 'tag';
+export type SearchScope = 'all' | 'title' | 'body' | 'title-body' | 'tag' | 'group' | 'series';
 
 export interface VersionInfo {
   library: string;
@@ -17,6 +17,10 @@ export interface Post {
   date: string;
   category: Category;
   tags: string[];
+  groups?: string[];
+  series?: string;
+  seriesTitle?: string;
+  seriesOrder?: number;
   summary: string;
   content: string;
   sourcePath?: string;
@@ -31,13 +35,17 @@ export interface SearchIndexEntry {
   date: string;
   category: Category;
   tags: string[];
+  groups?: string[];
+  series?: string;
+  seriesTitle?: string;
+  seriesOrder?: number;
   summary: string;
   rawText: string;
   sourcePath?: string;
 }
 
 export interface SearchQueryParseResult {
-  mode: SearchQueryMode;
+  scope: SearchScope;
   query: string;
   tags: string[];
   operator: SearchQueryOperator;

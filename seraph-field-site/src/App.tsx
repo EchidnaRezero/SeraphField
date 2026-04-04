@@ -1,14 +1,15 @@
 import React, { Suspense, lazy, useState, useEffect } from 'react';
 import { AppView, Category } from './types';
-import { Lobby } from './components/Lobby';
 import { CustomCursor } from './components/CustomCursor';
 import { QuantumField } from './components/QuantumField';
 import { AnnihilationTransition } from './components/QuantumRainTransition';
 import { AnimatePresence, motion } from 'motion/react';
-import { postsBySlug } from './data/content';
 import { DEFAULT_CATEGORY } from './config/categories';
 import { navigateToHashRoute, parseHashRoute } from './lib/routes';
 
+const Lobby = lazy(() =>
+  import('./components/Lobby').then((module) => ({ default: module.Lobby })),
+);
 const Archive = lazy(() =>
   import('./components/Archive').then((module) => ({ default: module.Archive })),
 );
@@ -39,15 +40,7 @@ export default function App() {
       if (route.view === 'archive') {
         setInitialSearchQuery('');
         setInitialPostSlug(route.slug);
-        if (!route.slug) {
-          setInitialCategory(DEFAULT_CATEGORY);
-          return;
-        }
-
-        const targetPost = postsBySlug.get(route.slug);
-        if (targetPost) {
-          setInitialCategory(targetPost.category);
-        }
+        setInitialCategory(DEFAULT_CATEGORY);
         return;
       }
 
@@ -175,12 +168,14 @@ export default function App() {
             transition={{ duration: 0.2, ease: "easeInOut" }}
             className="w-full h-full"
           >
-            <Lobby
-              onEnter={handleEnter}
-              onOpenReferences={handleOpenReferences}
-              onSearch={handleSearch}
-              onOpenProfile={handleOpenProfile}
-            />
+            <Suspense fallback={viewFallback}>
+              <Lobby
+                onEnter={handleEnter}
+                onOpenReferences={handleOpenReferences}
+                onSearch={handleSearch}
+                onOpenProfile={handleOpenProfile}
+              />
+            </Suspense>
           </motion.div>
         ) : view === 'archive' ? (
           <motion.div
@@ -202,6 +197,7 @@ export default function App() {
                 initialPostSlug={initialPostSlug}
                 initialSearchQuery={initialSearchQuery}
                 onPostOpen={handlePostOpen}
+                onSearch={handleSearch}
               />
             </Suspense>
           </motion.div>

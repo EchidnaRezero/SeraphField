@@ -2,9 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Search, Tag } from 'lucide-react';
 import { motion } from 'motion/react';
 import { posts, searchIndex } from '../data/content';
-import { Category } from '../types';
+import { Category, SearchScope } from '../types';
 import { CATEGORY_ICON_MAP } from '../config/categories';
-import { searchPosts } from '../lib/search';
+import { formatSearchQuery, parseSearchQuery, searchPosts } from '../features/search';
 
 interface SearchResultsProps {
   onBack: () => void;
@@ -19,15 +19,53 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   onOpenPost,
   onSearch,
 }) => {
+  const formatGroupLabel = (value: string) =>
+    value
+      .split('-')
+      .map((part) => (part ? `${part[0].toUpperCase()}${part.slice(1)}` : part))
+      .join(' ');
+
   const [query, setQuery] = useState(initialQuery);
+  const [scope, setScope] = useState<SearchScope>('all');
 
   useEffect(() => {
-    setQuery(initialQuery);
+    const parsed = parseSearchQuery(initialQuery);
+    setQuery(
+      parsed.scope === 'tag'
+        ? parsed.tags.join(parsed.operator === 'or' ? ' or ' : ' and ')
+        : parsed.query,
+    );
+    setScope(parsed.scope);
   }, [initialQuery]);
 
-  const searchResult = useMemo(() => searchPosts(posts, searchIndex, query), [query]);
+  const effectiveQuery = useMemo(() => formatSearchQuery(scope, query), [scope, query]);
+  const searchResult = useMemo(() => searchPosts(posts, searchIndex, effectiveQuery), [effectiveQuery]);
   const parsedQuery = searchResult.parsedQuery;
   const matchedPosts = searchResult.matchedPosts;
+
+  const submitSearch = () => {
+    const formatted = formatSearchQuery(scope, query);
+    if (!formatted) {
+      return;
+    }
+
+    onSearch(formatted);
+  };
+
+  const searchModeLabel =
+    parsedQuery.scope === 'tag'
+      ? `Tag Search / ${parsedQuery.operator === 'or' ? 'Union' : 'Intersection'}`
+      : parsedQuery.scope === 'group'
+        ? 'Group Search'
+        : parsedQuery.scope === 'series'
+          ? 'Series Search'
+          : parsedQuery.scope === 'title'
+            ? 'Title Search'
+            : parsedQuery.scope === 'body'
+              ? 'Body Search'
+              : parsedQuery.scope === 'title-body'
+                ? 'Title + Body Search'
+                : 'Integrated Search';
 
   return (
     <div className="relative min-h-[100dvh] w-full overflow-x-hidden bg-hud-bg font-ui text-[#e0fbfc]">
@@ -62,25 +100,41 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
               onChange={(event) => setQuery(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === 'Enter') {
-                  onSearch(query);
+                  submitSearch();
                 }
               }}
-              placeholder="SEARCH_KEYWORD or #TAG1 and #TAG2 / #TAG1 or #TAG2"
+              placeholder="SEARCH_TERM"
               className="w-full border border-neon-cyan/35 bg-neon-cyan/10 px-4 py-3 pr-12 text-base font-mono text-neon-cyan placeholder:text-neon-cyan/35 transition-all focus:border-neon-cyan/75 focus:outline-none"
             />
             <button
               type="button"
-              onClick={() => onSearch(query)}
+              onClick={submitSearch}
               className="absolute right-3 top-1/2 -translate-y-1/2"
               aria-label="search documents"
             >
               <Search className="h-4 w-4 text-neon-cyan/55 transition-colors group-focus-within/search:text-neon-cyan" />
             </button>
           </div>
-          <div className="mt-3 text-[10px] font-mono uppercase tracking-[0.16em] text-white/46">
-            {parsedQuery.mode === 'tag'
-              ? `Tag Search / ${parsedQuery.operator === 'or' ? 'Union' : 'Intersection'}`
-              : 'Keyword Search / Title + Tag + Body'}
+          <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <label className="inline-flex items-center gap-3 text-[10px] font-mono uppercase tracking-[0.16em] text-white/46">
+              Scope
+              <select
+                value={scope}
+                onChange={(event) => setScope(event.target.value as SearchScope)}
+                className="border border-neon-cyan/25 bg-black/40 px-3 py-2 text-[11px] uppercase tracking-[0.18em] text-neon-cyan focus:border-neon-cyan/60 focus:outline-none"
+              >
+                <option value="all">All</option>
+                <option value="title">Title</option>
+                <option value="body">Body</option>
+                <option value="title-body">Title+Body</option>
+                <option value="tag">Tag</option>
+                <option value="group">Group</option>
+                <option value="series">Series</option>
+              </select>
+            </label>
+            <div className="text-[10px] font-mono uppercase tracking-[0.16em] text-white/46">
+              {searchModeLabel}
+            </div>
           </div>
         </div>
 
@@ -91,7 +145,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                 <Search className="mb-4 h-12 w-12 text-neon-cyan/35" />
                 <div className="text-xl uppercase tracking-[0.26em]">No Search Match</div>
                 <div className="mt-2 text-sm text-white/24">
-                  키워드 검색 또는 `#tag1 and #tag2`, `#tag1 or #tag2` 형식으로 다시 검색해보세요.
+                  검색 범위를 바꾸거나 `#tag1 and #tag2`, `group:...`, `series:...` 형식으로 다시 검색해보세요.
                 </div>
               </div>
             ) : (
@@ -126,13 +180,45 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                         </div>
                         <div className="flex max-w-full flex-wrap justify-start gap-2 lg:max-w-xs lg:justify-end">
                           {post.tags.map((tag) => (
-                            <span
+                            <button
                               key={`${post.id}-${tag}`}
-                              className="inline-flex items-center gap-1 border border-neon-cyan/22 px-2 py-1 text-[10px] font-mono text-neon-cyan/72"
+                              type="button"
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                onSearch(formatSearchQuery('tag', tag));
+                              }}
+                              className="inline-flex items-center gap-1 border border-neon-cyan/22 px-2 py-1 text-[10px] font-mono text-neon-cyan/72 transition-colors hover:bg-neon-cyan hover:text-black"
                             >
                               <Tag className="h-3 w-3" />
                               {tag}
-                            </span>
+                            </button>
+                          ))}
+                          {post.series && (
+                            <button
+                              type="button"
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                onSearch(formatSearchQuery('series', post.series ?? ''));
+                              }}
+                              className="inline-flex items-center gap-1 border border-neon-cyan/22 px-2 py-1 text-[10px] font-mono text-white/72 transition-colors hover:bg-neon-cyan hover:text-black"
+                            >
+                              SERIES
+                              <span>{post.seriesTitle ?? post.series}</span>
+                            </button>
+                          )}
+                          {(post.groups ?? []).map((group) => (
+                            <button
+                              key={`${post.id}-${group}`}
+                              type="button"
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                onSearch(formatSearchQuery('group', group));
+                              }}
+                              className="inline-flex items-center gap-1 border border-neon-cyan/22 px-2 py-1 text-[10px] font-mono text-white/60 transition-colors hover:bg-neon-cyan hover:text-black"
+                            >
+                              GROUP
+                              <span>{formatGroupLabel(group)}</span>
+                            </button>
                           ))}
                         </div>
                       </div>

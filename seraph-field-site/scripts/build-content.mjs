@@ -63,9 +63,13 @@ async function main() {
     const date = draftPost.date;
     const summary = resolveSummary(draftPost.parsed.data.summary, normalizedContent);
     const slug = draftPost.slug;
+    const groups = resolveGroups(draftPost.parsed.data.groups);
+    const series = resolveOptionalString(draftPost.parsed.data.series);
+    const seriesTitle = resolveOptionalString(draftPost.parsed.data.seriesTitle ?? draftPost.parsed.data.series_title);
+    const seriesOrder = resolveOptionalNumber(draftPost.parsed.data.seriesOrder ?? draftPost.parsed.data.series_order);
     const id = slug;
     const versions = resolveVersions(draftPost.trackedVersionIds, versionRegistry);
-    const rawText = toSearchText(title, normalizedContent, tags, category, versions);
+    const rawText = toSearchText(title, normalizedContent, tags, groups, series, seriesTitle, category, versions);
 
     const post = {
       id,
@@ -74,6 +78,10 @@ async function main() {
       date,
       category,
       tags,
+      ...(groups.length > 0 ? { groups } : {}),
+      ...(series ? { series } : {}),
+      ...(seriesTitle ? { seriesTitle } : {}),
+      ...(Number.isInteger(seriesOrder) ? { seriesOrder } : {}),
       summary,
       content: normalizedContent,
       sourcePath: draftPost.relativePath,
@@ -88,6 +96,10 @@ async function main() {
       date,
       category,
       tags,
+      ...(groups.length > 0 ? { groups } : {}),
+      ...(series ? { series } : {}),
+      ...(seriesTitle ? { seriesTitle } : {}),
+      ...(Number.isInteger(seriesOrder) ? { seriesOrder } : {}),
       summary,
       rawText,
       sourcePath: draftPost.relativePath,
@@ -371,16 +383,49 @@ function resolveTrackedVersionIds(value) {
   return [];
 }
 
+function resolveGroups(value) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((entry) => typeof entry === "string")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+function resolveOptionalString(value) {
+  if (typeof value !== "string" || !value.trim()) {
+    return "";
+  }
+
+  return value.trim();
+}
+
+function resolveOptionalNumber(value) {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string" && value.trim() && /^-?\d+$/.test(value.trim())) {
+    return Number.parseInt(value.trim(), 10);
+  }
+
+  return null;
+}
+
 function resolveVersions(trackedVersionIds, versionRegistry) {
   return trackedVersionIds
     .map((id) => versionRegistry.get(id))
     .filter(Boolean);
 }
 
-function toSearchText(title, content, tags, category, versions) {
+function toSearchText(title, content, tags, groups, series, seriesTitle, category, versions) {
   const versionText = versions.map((entry) => `${entry.library} ${entry.version} ${entry.date}`.trim()).join(" ");
+  const groupText = groups.join(" ");
+  const seriesText = [series, seriesTitle].filter(Boolean).join(" ");
 
-  return [title, stripMarkdown(content), tags.join(" "), category, versionText]
+  return [title, stripMarkdown(content), tags.join(" "), groupText, seriesText, category, versionText]
     .join(" ")
     .replace(/\s+/g, " ")
     .trim();

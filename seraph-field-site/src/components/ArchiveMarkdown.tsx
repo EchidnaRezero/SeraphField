@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactMarkdown, { defaultUrlTransform } from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -13,8 +14,10 @@ import tsx from 'react-syntax-highlighter/dist/esm/languages/prism/tsx';
 import typescript from 'react-syntax-highlighter/dist/esm/languages/prism/typescript';
 import 'katex/dist/katex.min.css';
 import type { Post } from '../types';
+import { postsByGroup, postsBySeries } from '../data/content';
 import { buildHash } from '../lib/routes';
-import { buildHeadingId, isDisplayMathParagraph } from '../lib/archive';
+import { buildHeadingId, isDisplayMathParagraph, normalizeMathDelimiters } from '../lib/archive';
+import { MermaidBlock } from './MermaidBlock';
 
 SyntaxHighlighter.registerLanguage('bash', bash);
 SyntaxHighlighter.registerLanguage('shell', bash);
@@ -33,9 +36,36 @@ SyntaxHighlighter.registerLanguage('tsx', tsx);
 interface ArchiveMarkdownProps {
   post: Post;
   onOpenPostBySlug: (slug: string) => void;
+  onSelectTag: (tag: string) => void;
+  onSearchQuery: (query: string) => void;
 }
 
-export const ArchiveMarkdown: React.FC<ArchiveMarkdownProps> = ({ post, onOpenPostBySlug }) => {
+const formatCollectionLabel = (value: string) =>
+  value
+    .split('-')
+    .map((part) => (part ? `${part[0].toUpperCase()}${part.slice(1)}` : part))
+    .join(' ');
+
+export const ArchiveMarkdown: React.FC<ArchiveMarkdownProps> = ({
+  post,
+  onOpenPostBySlug,
+  onSelectTag,
+  onSearchQuery,
+}) => {
+  const normalizedContent = normalizeMathDelimiters(post.content);
+  const seriesPosts = post.series ? postsBySeries.get(post.series) ?? [] : [];
+  const relatedGroupEntries = (post.groups ?? []).map((group) => ({
+    group,
+    posts: (postsByGroup.get(group) ?? []).filter((entry) => entry.id !== post.id),
+  }));
+  const currentSeriesIndex = seriesPosts.findIndex((entry) => entry.id === post.id);
+  const previousSeriesPost = currentSeriesIndex > 0 ? seriesPosts[currentSeriesIndex - 1] : null;
+  const nextSeriesPost =
+    currentSeriesIndex >= 0 && currentSeriesIndex < seriesPosts.length - 1
+      ? seriesPosts[currentSeriesIndex + 1]
+      : null;
+  const visibleGroupEntries = relatedGroupEntries.filter((entry) => entry.posts.length > 0);
+
   return (
     <article className="mx-auto max-w-4xl font-body">
       <header className="mb-8 md:mb-12">
@@ -46,11 +76,35 @@ export const ArchiveMarkdown: React.FC<ArchiveMarkdownProps> = ({ post, onOpenPo
           <span className="tag">DATE: {post.date.replace(/-/g, '.')}</span>
           <div className="flex gap-2">
             {post.tags.map((tag) => (
-              <span key={tag} className="tag">
+              <button
+                key={tag}
+                type="button"
+                className="tag cursor-pointer transition-colors hover:bg-neon-cyan hover:text-black"
+                onClick={() => onSelectTag(tag)}
+              >
                 #{tag}
-              </span>
+              </button>
             ))}
           </div>
+          {post.series && (
+            <button
+              type="button"
+              className="tag cursor-pointer transition-colors hover:bg-neon-cyan hover:text-black"
+              onClick={() => onSearchQuery(`series:${post.series}`)}
+            >
+              SERIES: {post.seriesTitle ?? post.series}
+            </button>
+          )}
+          {(post.groups ?? []).map((group) => (
+            <button
+              key={group}
+              type="button"
+              className="tag cursor-pointer transition-colors hover:bg-neon-cyan hover:text-black"
+              onClick={() => onSearchQuery(`group:${group}`)}
+            >
+              GROUP: {formatCollectionLabel(group)}
+            </button>
+          ))}
           {post.versions && post.versions.length > 0 && (
             <div className="flex gap-2">
               {post.versions.map((version) => (
@@ -65,7 +119,7 @@ export const ArchiveMarkdown: React.FC<ArchiveMarkdownProps> = ({ post, onOpenPo
 
       <div className="markdown-body content-body">
         <ReactMarkdown
-          remarkPlugins={[remarkMath]}
+          remarkPlugins={[remarkGfm, remarkMath]}
           rehypePlugins={[rehypeKatex]}
           urlTransform={(url) => {
             if (url.startsWith('post://')) {
@@ -89,9 +143,14 @@ export const ArchiveMarkdown: React.FC<ArchiveMarkdownProps> = ({ post, onOpenPo
             },
             code({ node, inline, className, children, ...props }: any) {
               const match = /language-(\w+)/.exec(className || '');
-              const fileName = match ? `/// ${post.id}.${match[1] === 'python' ? 'py' : match[1]}` : '/// snippet';
+              const language = match?.[1]?.toLowerCase();
+              const fileName = language ? `/// ${post.id}.${language === 'python' ? 'py' : language}` : '/// snippet';
 
-              return !inline && match ? (
+              if (!inline && language === 'mermaid') {
+                return <MermaidBlock chart={String(children).replace(/\n$/, '')} title={fileName} />;
+              }
+
+              return !inline && language ? (
                 <div className="code-wrapper">
                   <div className="code-header">
                     <span>{fileName}</span>
@@ -99,7 +158,7 @@ export const ArchiveMarkdown: React.FC<ArchiveMarkdownProps> = ({ post, onOpenPo
                   </div>
                   <SyntaxHighlighter
                     style={atomDark}
-                    language={match[1]}
+                    language={language}
                     PreTag="pre"
                     customStyle={{
                       margin: 0,
@@ -107,7 +166,7 @@ export const ArchiveMarkdown: React.FC<ArchiveMarkdownProps> = ({ post, onOpenPo
                       background: 'transparent',
                       fontFamily: 'var(--font-mono)',
                       fontSize: '1rem',
-                      overflowX: 'hidden',
+                      overflowX: 'auto',
                     }}
                   >
                     {String(children).replace(/\n$/, '')}
@@ -162,9 +221,150 @@ export const ArchiveMarkdown: React.FC<ArchiveMarkdownProps> = ({ post, onOpenPo
             },
           }}
         >
-          {post.content}
+          {normalizedContent}
         </ReactMarkdown>
       </div>
+
+      {(seriesPosts.length > 1 || visibleGroupEntries.length > 0) && (
+        <section className="collection-hub">
+          <div className="collection-hub__header">
+            <div className="collection-hub__eyebrow">Document Network</div>
+            <h2 className="collection-hub__title">Series and Groups</h2>
+            <p className="collection-hub__summary">
+              같은 읽기 흐름과 같은 주제 묶음을 한곳에서 이동할 수 있게 정리한 탐색 구역이다.
+            </p>
+          </div>
+
+          {seriesPosts.length > 1 && (
+            <div className="collection-cluster">
+              <div className="collection-cluster__header">
+                <div>
+                  <div className="collection-cluster__eyebrow">Series</div>
+                  <h3 className="collection-cluster__title">
+                    {post.seriesTitle ?? formatCollectionLabel(post.series ?? '')}
+                  </h3>
+                  <div className="collection-cluster__meta">
+                    {currentSeriesIndex + 1} / {seriesPosts.length} 문서
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onSearchQuery(`series:${post.series}`)}
+                  className="collection-cluster__action"
+                >
+                  Search Series
+                </button>
+              </div>
+
+              <div className="collection-nav-grid">
+                {previousSeriesPost && (
+                  <button
+                    type="button"
+                    onClick={() => onOpenPostBySlug(previousSeriesPost.slug)}
+                    className="collection-nav-card"
+                  >
+                    <div className="collection-nav-card__eyebrow">
+                      Previous In Series
+                    </div>
+                    <div className="collection-nav-card__title">{previousSeriesPost.title}</div>
+                  </button>
+                )}
+                {nextSeriesPost && (
+                  <button
+                    type="button"
+                    onClick={() => onOpenPostBySlug(nextSeriesPost.slug)}
+                    className="collection-nav-card"
+                  >
+                    <div className="collection-nav-card__eyebrow">
+                      Next In Series
+                    </div>
+                    <div className="collection-nav-card__title">{nextSeriesPost.title}</div>
+                  </button>
+                )}
+              </div>
+
+              <div className="collection-series-list">
+                {seriesPosts.map((entry) => (
+                  <button
+                    key={entry.id}
+                    type="button"
+                    onClick={() => onOpenPostBySlug(entry.slug)}
+                    className={`collection-series-item ${
+                      entry.id === post.id
+                        ? 'collection-series-item--active'
+                        : 'collection-series-item--idle'
+                    }`}
+                  >
+                    <span className="collection-series-item__title">{entry.title}</span>
+                    <span className="collection-series-item__order">
+                      #{entry.seriesOrder ?? '?'}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {visibleGroupEntries.length > 0 && (
+            <div className="collection-cluster">
+              <div className="collection-cluster__header">
+                <div>
+                  <div className="collection-cluster__eyebrow">Groups</div>
+                  <h3 className="collection-cluster__title">Related Group Collections</h3>
+                  <div className="collection-cluster__meta">
+                    {visibleGroupEntries.length}개 그룹에서 관련 문서를 찾을 수 있다.
+                  </div>
+                </div>
+              </div>
+
+              <div className="collection-group-grid">
+                {visibleGroupEntries.map((entry) => (
+                  <div key={entry.group} className="collection-group-card">
+                    <div className="collection-group-card__header">
+                      <div>
+                        <div className="collection-group-card__eyebrow">Group</div>
+                        <h4 className="collection-group-card__title">
+                          {formatCollectionLabel(entry.group)}
+                        </h4>
+                        <div className="collection-group-card__meta">
+                          {entry.posts.length} related document{entry.posts.length === 1 ? '' : 's'}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => onSearchQuery(`group:${entry.group}`)}
+                        className="collection-cluster__action"
+                      >
+                        Open Search
+                      </button>
+                    </div>
+
+                    <div className="collection-group-card__list">
+                      {entry.posts.slice(0, 5).map((relatedPost) => (
+                        <button
+                          key={relatedPost.id}
+                          type="button"
+                          onClick={() => onOpenPostBySlug(relatedPost.slug)}
+                          className="collection-group-item"
+                        >
+                          <span className="collection-group-item__title">{relatedPost.title}</span>
+                          <span className="collection-group-item__category">{relatedPost.category}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    {entry.posts.length > 5 && (
+                      <div className="collection-group-card__more">
+                        +{entry.posts.length - 5} more in this group
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
     </article>
   );
 };

@@ -1,11 +1,7 @@
 import React from 'react';
 import { describe, expect, it } from 'vitest';
-import {
-  buildHeadingId,
-  extractTableOfContents,
-  filterPostsByCategoryAndQuery,
-  isDisplayMathParagraph,
-} from '../src/lib/archive';
+import { buildHeadingId, extractTableOfContents, isDisplayMathParagraph } from '../src/lib/archive';
+import { filterPostsByCategoryAndQuery } from '../src/features/search';
 import type { Post, SearchIndexEntry } from '../src/types';
 
 describe('buildHeadingId', () => {
@@ -32,6 +28,7 @@ describe('filterPostsByCategoryAndQuery', () => {
       date: '2026-03-20',
       category: 'PAPER',
       tags: ['Flow'],
+      groups: ['diffusion-foundations'],
       summary: 'summary',
       content: '# A',
     },
@@ -42,6 +39,7 @@ describe('filterPostsByCategoryAndQuery', () => {
       date: '2026-03-19',
       category: 'THEORY',
       tags: ['Math'],
+      groups: ['vector-calculus'],
       summary: 'summary',
       content: '# B',
     },
@@ -54,6 +52,7 @@ describe('filterPostsByCategoryAndQuery', () => {
     date: post.date,
     category: post.category,
     tags: post.tags,
+    groups: post.groups,
     summary: post.summary,
     rawText: `${post.title} ${post.summary} ${post.tags.join(' ')}`,
   }));
@@ -63,6 +62,12 @@ describe('filterPostsByCategoryAndQuery', () => {
       'paper-a',
     ]);
     expect(filterPostsByCategoryAndQuery(posts, indexEntries, 'THEORY', 'flow')).toEqual([]);
+  });
+
+  it('group 스코프 검색도 카테고리 필터 안에서 동작한다', () => {
+    expect(
+      filterPostsByCategoryAndQuery(posts, indexEntries, 'THEORY', 'group:vector-calculus').map((post) => post.id),
+    ).toEqual(['theory-b']);
   });
 });
 

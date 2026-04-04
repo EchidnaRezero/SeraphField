@@ -8,6 +8,7 @@ Desktop.ini
 # Root local artifacts
 *.log
 test/
+SCRATCH/
 
 # Frontend dependencies / build outputs
 seraph-field-site/node_modules/
@@ -23,3 +24,6 @@ seraph-field-site/src/generated/search-index.json
 seraph-field-site/.env
 seraph-field-site/.env.*
 !seraph-field-site/.env.example
+
+# Local project settings
+local.settings.json

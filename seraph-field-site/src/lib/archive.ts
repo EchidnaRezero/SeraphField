@@ -1,5 +1,4 @@
 import React from 'react';
-import type { Category, Post, SearchIndexEntry } from '../types';
 
 export interface TocItem {
   text: string;
@@ -22,33 +21,6 @@ export const extractTableOfContents = (content: string): TocItem[] =>
       return { text, id: buildHeadingId(text) };
     });
 
-export const filterPostsByCategoryAndQuery = (
-  allPosts: Post[],
-  indexEntries: SearchIndexEntry[],
-  category: Category,
-  query: string,
-) => {
-  const normalizedQuery = query.trim().toLowerCase();
-  const allowedIds = new Set(
-    indexEntries
-      .filter((entry) => entry.category === category)
-      .filter((entry) => {
-        if (!normalizedQuery) {
-          return true;
-        }
-
-        return (
-          entry.title.toLowerCase().includes(normalizedQuery) ||
-          entry.tags.some((tag) => tag.toLowerCase().includes(normalizedQuery)) ||
-          entry.rawText.toLowerCase().includes(normalizedQuery)
-        );
-      })
-      .map((entry) => entry.id),
-  );
-
-  return allPosts.filter((post) => allowedIds.has(post.id));
-};
-
 export const isDisplayMathParagraph = (children: React.ReactNode) => {
   const childArray = React.Children.toArray(children).filter((child) => {
     if (typeof child === 'string') {
@@ -64,4 +36,28 @@ export const isDisplayMathParagraph = (children: React.ReactNode) => {
     typeof firstChild.props.className === 'string' &&
     firstChild.props.className.includes('katex-display')
   );
+};
+
+export const normalizeMathDelimiters = (content: string) => {
+  const lines = content.split('\n');
+  const normalized: string[] = [];
+  let inFence = false;
+
+  for (const line of lines) {
+    const trimmed = line.trimStart();
+    if (trimmed.startsWith('```')) {
+      inFence = !inFence;
+      normalized.push(line);
+      continue;
+    }
+
+    if (inFence) {
+      normalized.push(line);
+      continue;
+    }
+
+    normalized.push(line.replace(/\\\[/g, '$$').replace(/\\\]/g, '$$').replace(/\\\(/g, '$').replace(/\\\)/g, '$'));
+  }
+
+  return normalized.join('\n');
 };

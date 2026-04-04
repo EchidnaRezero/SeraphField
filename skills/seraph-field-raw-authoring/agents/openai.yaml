@@ -1,4 +1,0 @@
-interface:
-  display_name: "Seraph Field RAW"
-  short_description: "Create and sanitize RAW markdown for Seraph Field."
-  default_prompt: "Write or revise RAW markdown for Seraph Field using the repository's frontmatter, link, tag, and privacy rules."

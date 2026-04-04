@@ -2,6 +2,10 @@ export function validateFrontmatterContract(frontmatter, content, relativePath) 
   const errors = [];
   const normalizedCategory = normalizeCategory(frontmatter.category);
   const trackedVersionIds = resolveTrackedVersionIds(frontmatter.trackedVersions ?? frontmatter.tracked_versions);
+  const groups = resolveStringArray(frontmatter.groups);
+  const series = resolveOptionalString(frontmatter.series);
+  const seriesTitle = resolveOptionalString(frontmatter.seriesTitle ?? frontmatter.series_title);
+  const seriesOrder = resolveOptionalNumber(frontmatter.seriesOrder ?? frontmatter.series_order);
 
   if (typeof frontmatter.title !== 'string' || !frontmatter.title.trim()) {
     errors.push('title is required');
@@ -28,6 +32,22 @@ export function validateFrontmatterContract(frontmatter, content, relativePath) 
     errors.push('summary is required');
   }
 
+  if (frontmatter.groups !== undefined && groups === null) {
+    errors.push('groups must be a YAML string array');
+  }
+
+  if ((frontmatter.series !== undefined || frontmatter.seriesTitle !== undefined || frontmatter.series_title !== undefined || frontmatter.seriesOrder !== undefined || frontmatter.series_order !== undefined) && !series) {
+    errors.push('series metadata requires a non-empty series id');
+  }
+
+  if (series && !seriesTitle) {
+    errors.push('series_title is required when series is set');
+  }
+
+  if (series && !Number.isInteger(seriesOrder)) {
+    errors.push('series_order must be an integer when series is set');
+  }
+
   const firstContentLine = content
     .split(/\r?\n/)
     .map((line) => line.trim())
@@ -41,13 +61,53 @@ export function validateFrontmatterContract(frontmatter, content, relativePath) 
   }
 
   const localPathPattern = /(?:[A-Za-z]:\\|file:\/\/)/;
-  if (localPathPattern.test(JSON.stringify(frontmatter)) || localPathPattern.test(content)) {
+  const sanitizedContent = stripMarkdownMath(content);
+  if (localPathPattern.test(JSON.stringify(frontmatter)) || localPathPattern.test(sanitizedContent)) {
     errors.push('absolute local paths are not allowed in public RAW content');
   }
 
   if (errors.length > 0) {
     throw new Error(`[${relativePath}] ${errors.join('; ')}`);
   }
+}
+
+function resolveOptionalString(value) {
+  if (typeof value !== 'string' || !value.trim()) {
+    return null;
+  }
+
+  return value.trim();
+}
+
+function resolveOptionalNumber(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === 'string' && value.trim() && /^-?\d+$/.test(value.trim())) {
+    return Number.parseInt(value.trim(), 10);
+  }
+
+  return null;
+}
+
+function resolveStringArray(value) {
+  if (value === undefined) {
+    return [];
+  }
+
+  if (!Array.isArray(value) || value.some((entry) => typeof entry !== 'string' || !entry.trim())) {
+    return null;
+  }
+
+  return value.map((entry) => entry.trim()).filter(Boolean);
+}
+
+function stripMarkdownMath(content) {
+  return content
+    .replace(/\$\$[\s\S]*?\$\$/g, ' ')
+    .replace(/\\\([\s\S]*?\\\)/g, ' ')
+    .replace(/(?<!\$)\$(?!\$)[\s\S]*?(?<!\$)\$(?!\$)/g, ' ');
 }
 
 function normalizeCategory(value) {

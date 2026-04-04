@@ -4,7 +4,8 @@ import { posts, postsBySlug, searchIndex } from '../data/content';
 import { AnimatePresence, motion } from 'motion/react';
 import { BookOpen, ArrowLeft, Search } from 'lucide-react';
 import { CATEGORY_ITEMS } from '../config/categories';
-import { extractTableOfContents, filterPostsByCategoryAndQuery } from '../lib/archive';
+import { extractTableOfContents } from '../lib/archive';
+import { filterPostsByCategoryAndQuery } from '../features/search';
 import { ArchiveMarkdown } from './ArchiveMarkdown';
 import { ArchiveToc } from './ArchiveToc';
 
@@ -14,6 +15,7 @@ interface ArchiveProps {
   initialPostSlug?: string;
   initialSearchQuery?: string;
   onPostOpen?: (slug: string, category: Category) => void;
+  onSearch?: (query: string) => void;
 }
 
 export const Archive: React.FC<ArchiveProps> = ({
@@ -22,6 +24,7 @@ export const Archive: React.FC<ArchiveProps> = ({
   initialPostSlug,
   initialSearchQuery,
   onPostOpen,
+  onSearch,
 }) => {
   const [currentCategory, setCurrentCategory] = useState<Category>(initialCategory || 'THEORY');
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
@@ -84,8 +87,10 @@ export const Archive: React.FC<ArchiveProps> = ({
     }
 
     if (!selectedPost || !filteredPosts.find((post) => post.id === selectedPost.id)) {
+      // When the current selection drops out of the locally filtered list,
+      // keep the fallback selection local so typing in the search box does not
+      // trigger a hash-route change that clears the in-progress query.
       setSelectedPost(filteredPosts[0]);
-      onPostOpen?.(filteredPosts[0].slug, filteredPosts[0].category);
     }
   }, [filteredPosts, onPostOpen, selectedPost]);
 
@@ -258,7 +263,12 @@ export const Archive: React.FC<ArchiveProps> = ({
                   exit={{ opacity: 0, y: -10 }}
                   className="pb-24 md:pb-32"
                 >
-                  <ArchiveMarkdown post={selectedPost} onOpenPostBySlug={openPostBySlug} />
+                  <ArchiveMarkdown
+                    post={selectedPost}
+                    onOpenPostBySlug={openPostBySlug}
+                    onSelectTag={(tag) => onSearch?.(`#${tag}`)}
+                    onSearchQuery={(query) => onSearch?.(query)}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>

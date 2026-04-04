@@ -33,6 +33,58 @@ export const popularTags = (() => {
     .map(([tag]) => `#${tag}`);
 })();
 
+export const postsBySeries = (() => {
+  const groups = new Map<string, Post[]>();
+
+  for (const post of posts) {
+    if (!post.series) {
+      continue;
+    }
+
+    const current = groups.get(post.series) ?? [];
+    current.push(post);
+    groups.set(post.series, current);
+  }
+
+  for (const [seriesId, entries] of groups) {
+    groups.set(
+      seriesId,
+      [...entries].sort((left, right) => {
+        const leftOrder = left.seriesOrder ?? Number.MAX_SAFE_INTEGER;
+        const rightOrder = right.seriesOrder ?? Number.MAX_SAFE_INTEGER;
+        return leftOrder - rightOrder || left.title.localeCompare(right.title, 'ko');
+      }),
+    );
+  }
+
+  return groups;
+})();
+
+export const postsByGroup = (() => {
+  const groups = new Map<string, Post[]>();
+
+  for (const post of posts) {
+    for (const group of post.groups ?? []) {
+      const current = groups.get(group) ?? [];
+      current.push(post);
+      groups.set(group, current);
+    }
+  }
+
+  for (const [groupId, entries] of groups) {
+    groups.set(
+      groupId,
+      [...entries].sort(
+        (left, right) =>
+          new Date(right.date).getTime() - new Date(left.date).getTime() ||
+          left.title.localeCompare(right.title, 'ko'),
+      ),
+    );
+  }
+
+  return groups;
+})();
+
 export const trackedRepositories: TrackedRepository[] = (() => {
   const references = new Map<string, TrackedRepository>();
 

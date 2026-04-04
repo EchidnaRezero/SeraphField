@@ -1,18 +1,13 @@
-## Working agreements
-- Always converse with the user in Korean.
-- When showing code, add brief Korean explanations in comments if needed.
-- Assume the default execution environment is Windows (not WSL). Point out clearly if a command is likely to work only in WSL or Linux.
-
-## Local skill
-- For `RAW/**/*.md` creation or revision, prefer the project-local skill at `skills/seraph-field-raw-authoring/SKILL.md`.
-- Do not rely on globally installed skills for this repository-specific Markdown workflow.
+## Guidance file variants
+- AI-facing guidance such as `AGENTS.md` and `SKILL.md` should be written in English.
+- To help Korean-speaking users understand the same guidance, create matching `_KR` files with the same meaning.
+- Because the English and `_KR` files should say the same thing, don't need to read `_KR` files for AI work unless the task is to sync them.
 
 ## RAW content safety
 - Treat every file under `RAW/` as public repository content.
 - Do not add personal identifiers to `RAW/**/*.md`: real names, emails, phone numbers, handles, social IDs, personal URLs, local file paths, private workspace links, or internal-only notes.
-- If a draft or source text contains a personal account or author label, replace the public-facing default identity with `AoiErika`.
+- If a draft or source text contains a personal account or author label, replace the public-facing default identity with `Echidna`.
 - If additional people, aliases, or account-like placeholders are needed, replace them with Heaven Burns Red character names or game codes from `RAW/hbr_charlist_2025_08_08.csv`.
-- Do not invent realistic personal emails. Use neutral placeholders such as `aoi.erika@example.invalid` only when an email-shaped example is unavoidable.
 - Remove stray AI-authorship traces, private TODOs, and prompt fragments before saving Markdown into `RAW/`.
 
 ## RAW markdown format
@@ -22,7 +17,7 @@
 ```yaml
 ---
 title: 문서 제목
-date: 2026-03-20
+date: 2026-03-21
 category: THEORY
 tags:
   - TagA
@@ -36,12 +31,10 @@ tracked_versions:
 
 - Valid `category` values are only `THEORY`, `PAPER`, `REPO`, `IMPLEMENT`.
 - Prefer `tags` as a YAML array, not a comma-separated string.
-- Use `tracked_versions` only when the document should participate in tracked repository version output. In practice this should be limited to `REPO` documents.
+- Use `tracked_versions` only for `REPO` documents that should participate in tracked repository version output.
 - Do not put absolute local paths in frontmatter or body.
 
 ## RAW writing rules
-- Start the body with a single `# 제목`.
-- Use `##` for sections that should appear in the article TOC.
 - Keep summaries, labels, and headings descriptive rather than chatty.
 - Keep content publishable as-is in a public study/portfolio repository.
 
