@@ -226,7 +226,24 @@
 }
 
 .markdown-body blockquote {
-  @apply border-l-2 border-neon-cyan/30 pl-4 italic text-zinc-500 mb-6;
+  @apply mb-6 border-l-2 border-neon-cyan/30 pl-4 text-zinc-400;
+  font-size: 0.98rem;
+  line-height: 1.7;
+  font-style: normal;
+}
+
+.markdown-body blockquote p {
+  font-size: inherit;
+  line-height: inherit;
+  margin-bottom: 0.9rem;
+}
+
+.markdown-body blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body blockquote .katex {
+  font-size: 1em;
 }
 
 .markdown-body table {
@@ -270,18 +287,41 @@
   padding: 1rem;
   margin: 1.5rem 0;
   overflow-x: auto;
+  overflow-y: hidden;
   width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.02),
     inset 0 -1px 0 rgba(255, 255, 255, 0.02);
 }
 
+.responsive-math-block {
+  min-width: 0;
+}
+
+.responsive-math-block__viewport {
+  width: 100%;
+  min-width: 0;
+}
+
+.responsive-math-block__inner {
+  width: max-content;
+  min-width: 100%;
+  max-width: none;
+}
+
 .math-block .katex-display {
   margin: 0;
+  display: block;
   overflow-x: auto;
   overflow-y: hidden;
   background: transparent;
+}
+
+.math-block .katex-display > .katex {
+  display: inline-block;
+  min-width: 100%;
 }
 
 .markdown-body > .katex-display,
@@ -292,6 +332,7 @@
   padding: 1rem;
   margin: 1rem 0;
   width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
   overflow-x: auto;
   overflow-y: hidden;
@@ -310,27 +351,48 @@
 }
 
 .meta-data {
+  display: grid;
+  gap: 0.65rem;
+  margin-bottom: 1.6rem;
+}
+
+.meta-row {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  align-items: center;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.meta-label {
+  flex: 0 0 auto;
+  min-width: 4.5rem;
+  padding-top: 0.2rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(25, 184, 190, 0.68);
+}
+
+.meta-chip-list {
+  display: flex;
+  flex: 1 1 0%;
+  gap: 0.45rem;
   flex-wrap: wrap;
 }
 
 .tag {
   display: inline-flex;
   align-items: center;
-  border: 1px solid var(--color-neon-cyan);
-  padding: 2px 8px;
+  border: 1px solid rgba(25, 184, 190, 0.55);
+  padding: 0.24rem 0.52rem;
   color: var(--color-neon-cyan);
-  background: var(--color-neon-cyan-dim);
+  background: rgba(25, 184, 190, 0.08);
   font-family: var(--font-mono);
-  font-size: 0.9rem;
-  line-height: 1;
+  font-size: 0.7rem;
+  line-height: 1.1;
   text-transform: uppercase;
-  letter-spacing: 0;
+  letter-spacing: 0.06em;
 }
 
 .center-tagline {
@@ -562,12 +624,183 @@
   }
 
   .tag {
-    font-size: 0.8rem;
+    font-size: 0.64rem;
   }
 
   .meta-data {
     gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .meta-row {
+    gap: 0.45rem;
+  }
+
+  .meta-label {
+    min-width: 100%;
+    padding-top: 0;
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+  }
+}
+
+@media (max-width: 1023px) {
+  .article-title {
+    font-size: clamp(1.6rem, 8.6vw, 2.5rem);
+    letter-spacing: 1px;
+    line-height: 0.98;
+    margin-bottom: 0.7rem;
+  }
+
+  .article-section-title,
+  .markdown-body h2 {
+    font-size: clamp(1.2rem, 5.8vw, 1.8rem);
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+    line-height: 1.05;
+  }
+
+  .markdown-body h3 {
+    font-size: clamp(1rem, 4.8vw, 1.3rem);
+    margin-top: 1.15rem;
+    margin-bottom: 0.55rem;
+  }
+
+  .markdown-body h4 {
+    font-size: 0.92rem;
+    margin-top: 1rem;
+  }
+
+  .markdown-body p,
+  .markdown-body li {
+    font-size: 0.94rem;
+    line-height: 1.7;
+  }
+
+  .math-block,
+  .markdown-body > .katex-display,
+  .markdown-body li .katex-display {
+    padding: 0.8rem 0.75rem;
+  }
+
+  .math-block .katex-display,
+  .markdown-body > .katex-display,
+  .markdown-body li .katex-display {
     font-size: 0.8rem;
+  }
+
+  .markdown-body ul,
+  .markdown-body ol {
+    margin-left: 1rem;
+    padding-left: 0.9rem;
+  }
+
+  .markdown-body blockquote {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    padding-left: 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .markdown-body blockquote p {
+    margin-bottom: 0.7rem;
+  }
+
+  .markdown-body table {
+    font-size: 0.84rem;
+  }
+
+  .markdown-body th,
+  .markdown-body td {
+    padding: 0.55rem 0.6rem;
+  }
+
+  .meta-data {
+    margin-bottom: 1.1rem;
+  }
+
+  .meta-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+  }
+
+  .tag {
+    font-size: 0.62rem;
+    padding: 0.22rem 0.42rem;
+  }
+
+  .code-header {
+    padding: 0.45rem 0.7rem;
+    font-size: 0.74rem;
+  }
+
+  .collection-hub {
+    margin-top: 2.4rem;
+    padding-top: 1.35rem;
+    gap: 1rem;
+  }
+
+  .collection-hub__title,
+  .collection-cluster__title,
+  .collection-group-card__title {
+    font-size: clamp(1.1rem, 5.4vw, 1.55rem);
+    line-height: 1.02;
+  }
+
+  .collection-hub__summary,
+  .collection-cluster__meta,
+  .collection-group-card__meta,
+  .collection-group-card__more {
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+
+  .collection-cluster,
+  .collection-group-card {
+    gap: 0.75rem;
+    padding: 0.9rem;
+  }
+
+  .collection-nav-card,
+  .collection-series-item,
+  .collection-group-item {
+    padding: 0.8rem 0.85rem;
+  }
+
+  .collection-nav-card__title,
+  .collection-series-item__title,
+  .collection-group-item__title {
+    font-size: 0.88rem;
+    line-height: 1.35;
+  }
+
+  .collection-series-item__order,
+  .collection-group-item__category,
+  .collection-hub__eyebrow,
+  .collection-cluster__eyebrow,
+  .collection-nav-card__eyebrow,
+  .collection-group-card__eyebrow {
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+  }
+
+  .collection-cluster__action {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.62rem;
+  }
+
+  .mermaid-wrapper {
+    margin: 1rem 0 1.25rem;
+  }
+
+  .mermaid-toolbar__hint {
+    font-size: 0.64rem;
+  }
+
+  .mermaid-toolbar__button {
+    min-width: 1.9rem;
+    height: 1.8rem;
+    font-size: 0.78rem;
   }
 }
 
@@ -591,6 +824,10 @@
   background:
     linear-gradient(180deg, rgba(25, 184, 190, 0.05), rgba(0, 0, 0, 0)),
     rgba(4, 6, 8, 0.92);
+}
+
+.mermaid-surface--inline {
+  overflow: visible;
 }
 
 .mermaid-toolbar {
@@ -690,6 +927,11 @@
   min-width: 100%;
 }
 
+.mermaid-diagram--inline {
+  width: 100%;
+  min-width: 0;
+}
+
 .mermaid-diagram svg {
   width: 100% !important;
   min-width: 0;
@@ -749,6 +991,16 @@
 
   .mermaid-transform-wrapper {
     min-height: 11rem;
+  }
+
+  .mermaid-surface--inline {
+    padding: 0.7rem 0.7rem 0.85rem;
+  }
+
+  .mermaid-diagram--inline svg {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100%;
   }
 }
 

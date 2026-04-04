@@ -139,20 +139,26 @@ export const MermaidBlock: React.FC<MermaidBlockProps> = ({ chart }) => {
   const [scale, setScale] = useState(INITIAL_MERMAID_SCALE);
   const [isPanUnlocked, setIsPanUnlocked] = useState(false);
   const [isCoarsePointer, setIsCoarsePointer] = useState(false);
+  const [isCompactViewport, setIsCompactViewport] = useState(false);
   const [viewerHeight, setViewerHeight] = useState<number | null>(null);
   const uniqueId = useId().replace(/:/g, '');
   const diagramRef = useRef<HTMLDivElement | null>(null);
   const surfaceRef = useRef<HTMLDivElement | null>(null);
-  const chartDirectionMatch = chart.match(/flowchart\s+(TB|TD|BT|LR|RL)\b/i);
+  const effectiveChart =
+    isCompactViewport && /(?:flowchart|graph)\s+(LR|RL)\b/i.test(chart)
+      ? chart.replace(/((?:flowchart|graph)\s+)(LR|RL)\b/i, '$1TB')
+      : chart;
+  const chartDirectionMatch = effectiveChart.match(/(?:flowchart|graph)\s+(TB|TD|BT|LR|RL)\b/i);
   const chartDirection = chartDirectionMatch?.[1].toUpperCase() ?? 'TB';
   const isVerticalFlow = chartDirection === 'TB' || chartDirection === 'TD' || chartDirection === 'BT';
+  const useInlineMobileViewer = isCompactViewport && isVerticalFlow;
   const panUnlockThreshold = isCoarsePointer ? INITIAL_MERMAID_SCALE + PAN_UNLOCK_EPSILON : 1.01;
 
   useEffect(() => {
     setScale(INITIAL_MERMAID_SCALE);
     setIsPanUnlocked(false);
     setViewerHeight(null);
-  }, [chart]);
+  }, [effectiveChart]);
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
@@ -160,15 +166,22 @@ export const MermaidBlock: React.FC<MermaidBlockProps> = ({ chart }) => {
     }
 
     const mediaQuery = window.matchMedia('(pointer: coarse)');
+    const compactViewportQuery = window.matchMedia('(max-width: 767px)');
     const updatePointerMode = () => {
       setIsCoarsePointer(mediaQuery.matches);
     };
+    const updateViewportMode = () => {
+      setIsCompactViewport(compactViewportQuery.matches);
+    };
 
     updatePointerMode();
+    updateViewportMode();
     mediaQuery.addEventListener?.('change', updatePointerMode);
+    compactViewportQuery.addEventListener?.('change', updateViewportMode);
 
     return () => {
       mediaQuery.removeEventListener?.('change', updatePointerMode);
+      compactViewportQuery.removeEventListener?.('change', updateViewportMode);
     };
   }, []);
 
@@ -209,7 +222,7 @@ export const MermaidBlock: React.FC<MermaidBlockProps> = ({ chart }) => {
       const mermaid = await ensureMermaid();
 
       try {
-        const { svg: renderedSvg } = await mermaid.render(`mermaid-${uniqueId}`, chart);
+        const { svg: renderedSvg } = await mermaid.render(`mermaid-${uniqueId}`, effectiveChart);
 
         if (!active || currentSequence !== renderSequence) {
           return;
@@ -242,7 +255,7 @@ export const MermaidBlock: React.FC<MermaidBlockProps> = ({ chart }) => {
       active = false;
       fontSet?.removeEventListener?.('loadingdone', handleFontLoadingDone);
     };
-  }, [chart, uniqueId]);
+  }, [effectiveChart, uniqueId]);
 
   if (error) {
     return (
@@ -251,7 +264,57 @@ export const MermaidBlock: React.FC<MermaidBlockProps> = ({ chart }) => {
           <span>Mermaid Diagram</span>
           <span>[MERMAID ERROR]</span>
         </div>
-        <pre className="mermaid-error">{chart}</pre>
+        <pre className="mermaid-error">{effectiveChart}</pre>
+      </div>
+    );
+  }
+
+  if (useInlineMobileViewer) {
+    return (
+      <div className="mermaid-wrapper">
+        <div className="mermaid-toolbar">
+          <div className="mermaid-toolbar__status">
+            <span className="mermaid-toolbar__zoom">{Math.round(scale * 100)}%</span>
+          </div>
+          <div className="mermaid-toolbar__controls">
+            <button
+              type="button"
+              className="mermaid-toolbar__button"
+              aria-label="Zoom out diagram"
+              onClick={() => setScale((current) => Math.max(0.7, Number((current - 0.15).toFixed(2))))}
+            >
+              -
+            </button>
+            <button
+              type="button"
+              className="mermaid-toolbar__button"
+              aria-label="Zoom in diagram"
+              onClick={() => setScale((current) => Math.min(2.5, Number((current + 0.15).toFixed(2))))}
+            >
+              +
+            </button>
+            <button
+              type="button"
+              className="mermaid-toolbar__button mermaid-toolbar__button--reset"
+              aria-label="Reset diagram zoom"
+              onClick={() => setScale(1)}
+            >
+              reset
+            </button>
+          </div>
+        </div>
+        <div ref={surfaceRef} className="mermaid-surface mermaid-surface--inline">
+          <div
+            ref={diagramRef}
+            className="mermaid-diagram mermaid-diagram--inline"
+            style={{
+              transform: `scale(${scale})`,
+              transformOrigin: 'top center',
+            }}
+            // Mermaid returns sanitized SVG markup.
+            dangerouslySetInnerHTML={{ __html: svg }}
+          />
+        </div>
       </div>
     );
   }
@@ -295,10 +358,6 @@ export const MermaidBlock: React.FC<MermaidBlockProps> = ({ chart }) => {
             <div className="mermaid-toolbar">
               <div className="mermaid-toolbar__status">
                 <span className="mermaid-toolbar__zoom">{Math.round(scale * 100)}%</span>
-                <span className="mermaid-toolbar__hint">
-                  Ctrl+wheel/pinch zoom
-                  {isPanUnlocked ? ' · drag pan' : ' · drag unlocked after zoom'}
-                </span>
               </div>
               <div className="mermaid-toolbar__controls">
                 <button

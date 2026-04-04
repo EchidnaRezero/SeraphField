@@ -1,4 +1,5 @@
 import React from 'react';
+import { ChevronDown } from 'lucide-react';
 import ReactMarkdown, { defaultUrlTransform } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -18,6 +19,7 @@ import { postsByGroup, postsBySeries } from '../data/content';
 import { buildHash } from '../lib/routes';
 import { buildHeadingId, isDisplayMathParagraph, normalizeMathDelimiters } from '../lib/archive';
 import { MermaidBlock } from './MermaidBlock';
+import { ResponsiveMathBlock } from './ResponsiveMathBlock';
 
 SyntaxHighlighter.registerLanguage('bash', bash);
 SyntaxHighlighter.registerLanguage('shell', bash);
@@ -52,6 +54,17 @@ export const ArchiveMarkdown: React.FC<ArchiveMarkdownProps> = ({
   onSelectTag,
   onSearchQuery,
 }) => {
+  const articleRef = React.useRef<HTMLElement | null>(null);
+  const [isCompactViewport, setIsCompactViewport] = React.useState(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    return window.innerWidth < 1024;
+  });
+  const [isNetworkOpen, setIsNetworkOpen] = React.useState(false);
+  const [isSeriesOpen, setIsSeriesOpen] = React.useState(false);
+  const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>({});
   const normalizedContent = normalizeMathDelimiters(post.content);
   const seriesPosts = post.series ? postsBySeries.get(post.series) ?? [] : [];
   const relatedGroupEntries = (post.groups ?? []).map((group) => ({
@@ -65,53 +78,117 @@ export const ArchiveMarkdown: React.FC<ArchiveMarkdownProps> = ({
       ? seriesPosts[currentSeriesIndex + 1]
       : null;
   const visibleGroupEntries = relatedGroupEntries.filter((entry) => entry.posts.length > 0);
+  const hasCollectionHub = seriesPosts.length > 1 || visibleGroupEntries.length > 0;
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsCompactViewport(window.innerWidth < 1024);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    setIsNetworkOpen(false);
+    setIsSeriesOpen(false);
+    setOpenGroups({});
+  }, [post.id]);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    let frameId = 0;
+
+    const updateLooseKatexDisplays = () => {
+      const articleElement = articleRef.current;
+      if (!articleElement) {
+        return;
+      }
+
+      const displayNodes = articleElement.querySelectorAll<HTMLElement>('.katex-display');
+
+        displayNodes.forEach((displayNode) => {
+          if (displayNode.closest('.responsive-math-block')) {
+            return;
+          }
+
+        displayNode.style.fontSize = '';
+
+        if (window.innerWidth >= 1024) {
+          return;
+        }
+
+        const parentWidth = displayNode.parentElement?.clientWidth ?? 0;
+        const contentWidth = displayNode.scrollWidth;
+
+        if (!parentWidth || !contentWidth || contentWidth <= parentWidth) {
+          return;
+        }
+
+          const scale = Math.max(0.6, Math.min(1, parentWidth / contentWidth));
+          displayNode.style.fontSize = `${scale}em`;
+        });
+    };
+
+    const scheduleUpdate = () => {
+      cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(updateLooseKatexDisplays);
+    };
+
+    scheduleUpdate();
+    window.addEventListener('resize', scheduleUpdate);
+
+    return () => {
+      cancelAnimationFrame(frameId);
+      window.removeEventListener('resize', scheduleUpdate);
+    };
+  }, [post.id, normalizedContent]);
 
   return (
-    <article className="mx-auto max-w-4xl font-body">
+    <article ref={articleRef} className="mx-auto max-w-4xl font-body">
       <header className="mb-8 md:mb-12">
         <h1 className="article-title" data-text={post.title}>
           {post.title}
         </h1>
         <div className="meta-data">
-          <span className="tag">DATE: {post.date.replace(/-/g, '.')}</span>
-          <div className="flex gap-2">
-            {post.tags.map((tag) => (
-              <button
-                key={tag}
-                type="button"
-                className="tag cursor-pointer transition-colors hover:bg-neon-cyan hover:text-black"
-                onClick={() => onSelectTag(tag)}
-              >
-                #{tag}
-              </button>
-            ))}
+          <div className="meta-row">
+            <span className="meta-label">Date</span>
+            <span className="tag">{post.date.replace(/-/g, '.')}</span>
           </div>
-          {post.series && (
-            <button
-              type="button"
-              className="tag cursor-pointer transition-colors hover:bg-neon-cyan hover:text-black"
-              onClick={() => onSearchQuery(`series:${post.series}`)}
-            >
-              SERIES: {post.seriesTitle ?? post.series}
-            </button>
+          {post.tags.length > 0 && (
+            <div className="meta-row">
+              <span className="meta-label">Tags</span>
+              <div className="meta-chip-list">
+                {post.tags.map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    className="tag cursor-pointer transition-colors hover:bg-neon-cyan hover:text-black"
+                    onClick={() => onSelectTag(tag)}
+                  >
+                    #{tag}
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
-          {(post.groups ?? []).map((group) => (
-            <button
-              key={group}
-              type="button"
-              className="tag cursor-pointer transition-colors hover:bg-neon-cyan hover:text-black"
-              onClick={() => onSearchQuery(`group:${group}`)}
-            >
-              GROUP: {formatCollectionLabel(group)}
-            </button>
-          ))}
           {post.versions && post.versions.length > 0 && (
-            <div className="flex gap-2">
-              {post.versions.map((version) => (
-                <span key={`${version.library}-${version.version}`} className="tag">
-                  {version.library}:{version.version}
-                </span>
-              ))}
+            <div className="meta-row">
+              <span className="meta-label">Versions</span>
+              <div className="meta-chip-list">
+                {post.versions.map((version) => (
+                  <span key={`${version.library}-${version.version}`} className="tag">
+                    {version.library}:{version.version}
+                  </span>
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -136,7 +213,7 @@ export const ArchiveMarkdown: React.FC<ArchiveMarkdownProps> = ({
             },
             p: ({ node, children, ...props }) => {
               if (isDisplayMathParagraph(children)) {
-                return <div className="math-block">{children}</div>;
+                return <ResponsiveMathBlock>{children}</ResponsiveMathBlock>;
               }
 
               return <p {...props}>{children}</p>;
@@ -225,143 +302,318 @@ export const ArchiveMarkdown: React.FC<ArchiveMarkdownProps> = ({
         </ReactMarkdown>
       </div>
 
-      {(seriesPosts.length > 1 || visibleGroupEntries.length > 0) && (
+      {hasCollectionHub && (
         <section className="collection-hub">
-          <div className="collection-hub__header">
-            <div className="collection-hub__eyebrow">Document Network</div>
-            <h2 className="collection-hub__title">Series and Groups</h2>
-            <p className="collection-hub__summary">
-              같은 읽기 흐름과 같은 주제 묶음을 한곳에서 이동할 수 있게 정리한 탐색 구역이다.
-            </p>
-          </div>
-
-          {seriesPosts.length > 1 && (
-            <div className="collection-cluster">
-              <div className="collection-cluster__header">
-                <div>
-                  <div className="collection-cluster__eyebrow">Series</div>
-                  <h3 className="collection-cluster__title">
-                    {post.seriesTitle ?? formatCollectionLabel(post.series ?? '')}
-                  </h3>
-                  <div className="collection-cluster__meta">
-                    {currentSeriesIndex + 1} / {seriesPosts.length} 문서
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => onSearchQuery(`series:${post.series}`)}
-                  className="collection-cluster__action"
-                >
-                  Search Series
-                </button>
+          {isCompactViewport ? (
+            <button
+              type="button"
+              onClick={() => setIsNetworkOpen((current) => !current)}
+              className="flex w-full items-center justify-between gap-3 border border-neon-cyan/14 bg-black/20 px-4 py-3 text-left"
+            >
+              <div>
+                <div className="collection-hub__eyebrow">Document Network</div>
+                <h2 className="collection-hub__title">Series and Groups</h2>
+                <p className="collection-hub__summary">관련 시리즈와 그룹 탐색</p>
               </div>
-
-              <div className="collection-nav-grid">
-                {previousSeriesPost && (
-                  <button
-                    type="button"
-                    onClick={() => onOpenPostBySlug(previousSeriesPost.slug)}
-                    className="collection-nav-card"
-                  >
-                    <div className="collection-nav-card__eyebrow">
-                      Previous In Series
-                    </div>
-                    <div className="collection-nav-card__title">{previousSeriesPost.title}</div>
-                  </button>
-                )}
-                {nextSeriesPost && (
-                  <button
-                    type="button"
-                    onClick={() => onOpenPostBySlug(nextSeriesPost.slug)}
-                    className="collection-nav-card"
-                  >
-                    <div className="collection-nav-card__eyebrow">
-                      Next In Series
-                    </div>
-                    <div className="collection-nav-card__title">{nextSeriesPost.title}</div>
-                  </button>
-                )}
-              </div>
-
-              <div className="collection-series-list">
-                {seriesPosts.map((entry) => (
-                  <button
-                    key={entry.id}
-                    type="button"
-                    onClick={() => onOpenPostBySlug(entry.slug)}
-                    className={`collection-series-item ${
-                      entry.id === post.id
-                        ? 'collection-series-item--active'
-                        : 'collection-series-item--idle'
-                    }`}
-                  >
-                    <span className="collection-series-item__title">{entry.title}</span>
-                    <span className="collection-series-item__order">
-                      #{entry.seriesOrder ?? '?'}
-                    </span>
-                  </button>
-                ))}
-              </div>
+              <ChevronDown
+                className={`h-4 w-4 flex-shrink-0 text-neon-cyan/70 transition-transform ${
+                  isNetworkOpen ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+          ) : (
+            <div className="collection-hub__header">
+              <div className="collection-hub__eyebrow">Document Network</div>
+              <h2 className="collection-hub__title">Series and Groups</h2>
+              <p className="collection-hub__summary">
+                같은 읽기 흐름과 같은 주제 묶음을 한곳에서 이동할 수 있게 정리한 탐색 구역이다.
+              </p>
             </div>
           )}
 
-          {visibleGroupEntries.length > 0 && (
-            <div className="collection-cluster">
-              <div className="collection-cluster__header">
-                <div>
-                  <div className="collection-cluster__eyebrow">Groups</div>
-                  <h3 className="collection-cluster__title">Related Group Collections</h3>
-                  <div className="collection-cluster__meta">
-                    {visibleGroupEntries.length}개 그룹에서 관련 문서를 찾을 수 있다.
-                  </div>
-                </div>
-              </div>
-
-              <div className="collection-group-grid">
-                {visibleGroupEntries.map((entry) => (
-                  <div key={entry.group} className="collection-group-card">
-                    <div className="collection-group-card__header">
+          {(!isCompactViewport || isNetworkOpen) && (
+            <>
+              {seriesPosts.length > 1 &&
+                (isCompactViewport ? (
+                  <div className="collection-cluster">
+                    <button
+                      type="button"
+                      onClick={() => setIsSeriesOpen((current) => !current)}
+                      className="flex w-full items-center justify-between gap-3 text-left"
+                    >
                       <div>
-                        <div className="collection-group-card__eyebrow">Group</div>
-                        <h4 className="collection-group-card__title">
-                          {formatCollectionLabel(entry.group)}
-                        </h4>
-                        <div className="collection-group-card__meta">
-                          {entry.posts.length} related document{entry.posts.length === 1 ? '' : 's'}
+                        <div className="collection-cluster__eyebrow">Series</div>
+                        <h3 className="collection-cluster__title">
+                          {post.seriesTitle ?? formatCollectionLabel(post.series ?? '')}
+                        </h3>
+                        <div className="collection-cluster__meta">
+                          {currentSeriesIndex + 1} / {seriesPosts.length} 문서
+                        </div>
+                      </div>
+                      <ChevronDown
+                        className={`h-4 w-4 flex-shrink-0 text-neon-cyan/70 transition-transform ${
+                          isSeriesOpen ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </button>
+
+                    {isSeriesOpen && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => onSearchQuery(`series:${post.series}`)}
+                          className="collection-cluster__action"
+                        >
+                          Search Series
+                        </button>
+
+                        <div className="collection-nav-grid">
+                          {previousSeriesPost && (
+                            <button
+                              type="button"
+                              onClick={() => onOpenPostBySlug(previousSeriesPost.slug)}
+                              className="collection-nav-card"
+                            >
+                              <div className="collection-nav-card__eyebrow">
+                                Previous In Series
+                              </div>
+                              <div className="collection-nav-card__title">{previousSeriesPost.title}</div>
+                            </button>
+                          )}
+                          {nextSeriesPost && (
+                            <button
+                              type="button"
+                              onClick={() => onOpenPostBySlug(nextSeriesPost.slug)}
+                              className="collection-nav-card"
+                            >
+                              <div className="collection-nav-card__eyebrow">
+                                Next In Series
+                              </div>
+                              <div className="collection-nav-card__title">{nextSeriesPost.title}</div>
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="collection-series-list">
+                          {seriesPosts.map((entry) => (
+                            <button
+                              key={entry.id}
+                              type="button"
+                              onClick={() => onOpenPostBySlug(entry.slug)}
+                              className={`collection-series-item ${
+                                entry.id === post.id
+                                  ? 'collection-series-item--active'
+                                  : 'collection-series-item--idle'
+                              }`}
+                            >
+                              <span className="collection-series-item__title">{entry.title}</span>
+                              <span className="collection-series-item__order">
+                                #{entry.seriesOrder ?? '?'}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <div className="collection-cluster">
+                    <div className="collection-cluster__header">
+                      <div>
+                        <div className="collection-cluster__eyebrow">Series</div>
+                        <h3 className="collection-cluster__title">
+                          {post.seriesTitle ?? formatCollectionLabel(post.series ?? '')}
+                        </h3>
+                        <div className="collection-cluster__meta">
+                          {currentSeriesIndex + 1} / {seriesPosts.length} 문서
                         </div>
                       </div>
                       <button
                         type="button"
-                        onClick={() => onSearchQuery(`group:${entry.group}`)}
+                        onClick={() => onSearchQuery(`series:${post.series}`)}
                         className="collection-cluster__action"
                       >
-                        Open Search
+                        Search Series
                       </button>
                     </div>
 
-                    <div className="collection-group-card__list">
-                      {entry.posts.slice(0, 5).map((relatedPost) => (
+                    <div className="collection-nav-grid">
+                      {previousSeriesPost && (
                         <button
-                          key={relatedPost.id}
                           type="button"
-                          onClick={() => onOpenPostBySlug(relatedPost.slug)}
-                          className="collection-group-item"
+                          onClick={() => onOpenPostBySlug(previousSeriesPost.slug)}
+                          className="collection-nav-card"
                         >
-                          <span className="collection-group-item__title">{relatedPost.title}</span>
-                          <span className="collection-group-item__category">{relatedPost.category}</span>
+                          <div className="collection-nav-card__eyebrow">
+                            Previous In Series
+                          </div>
+                          <div className="collection-nav-card__title">{previousSeriesPost.title}</div>
+                        </button>
+                      )}
+                      {nextSeriesPost && (
+                        <button
+                          type="button"
+                          onClick={() => onOpenPostBySlug(nextSeriesPost.slug)}
+                          className="collection-nav-card"
+                        >
+                          <div className="collection-nav-card__eyebrow">
+                            Next In Series
+                          </div>
+                          <div className="collection-nav-card__title">{nextSeriesPost.title}</div>
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="collection-series-list">
+                      {seriesPosts.map((entry) => (
+                        <button
+                          key={entry.id}
+                          type="button"
+                          onClick={() => onOpenPostBySlug(entry.slug)}
+                          className={`collection-series-item ${
+                            entry.id === post.id
+                              ? 'collection-series-item--active'
+                              : 'collection-series-item--idle'
+                          }`}
+                        >
+                          <span className="collection-series-item__title">{entry.title}</span>
+                          <span className="collection-series-item__order">
+                            #{entry.seriesOrder ?? '?'}
+                          </span>
                         </button>
                       ))}
                     </div>
-
-                    {entry.posts.length > 5 && (
-                      <div className="collection-group-card__more">
-                        +{entry.posts.length - 5} more in this group
-                      </div>
-                    )}
                   </div>
                 ))}
-              </div>
-            </div>
+
+              {visibleGroupEntries.length > 0 &&
+                (isCompactViewport ? (
+                  <div className="collection-group-grid">
+                    {visibleGroupEntries.map((entry) => {
+                      const isOpen = openGroups[entry.group] ?? false;
+
+                      return (
+                        <div key={entry.group} className="collection-group-card">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setOpenGroups((current) => ({
+                                ...current,
+                                [entry.group]: !current[entry.group],
+                              }))
+                            }
+                            className="flex w-full items-center justify-between gap-3 text-left"
+                          >
+                            <div>
+                              <div className="collection-group-card__eyebrow">Group</div>
+                              <h4 className="collection-group-card__title">
+                                {formatCollectionLabel(entry.group)}
+                              </h4>
+                              <div className="collection-group-card__meta">
+                                {entry.posts.length} related document{entry.posts.length === 1 ? '' : 's'}
+                              </div>
+                            </div>
+                            <ChevronDown
+                              className={`h-4 w-4 flex-shrink-0 text-neon-cyan/70 transition-transform ${
+                                isOpen ? 'rotate-180' : ''
+                              }`}
+                            />
+                          </button>
+
+                          {isOpen && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => onSearchQuery(`group:${entry.group}`)}
+                                className="collection-cluster__action"
+                              >
+                                Open Search
+                              </button>
+
+                              <div className="collection-group-card__list">
+                                {entry.posts.slice(0, 5).map((relatedPost) => (
+                                  <button
+                                    key={relatedPost.id}
+                                    type="button"
+                                    onClick={() => onOpenPostBySlug(relatedPost.slug)}
+                                    className="collection-group-item"
+                                  >
+                                    <span className="collection-group-item__title">{relatedPost.title}</span>
+                                    <span className="collection-group-item__category">{relatedPost.category}</span>
+                                  </button>
+                                ))}
+                              </div>
+
+                              {entry.posts.length > 5 && (
+                                <div className="collection-group-card__more">
+                                  +{entry.posts.length - 5} more in this group
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="collection-cluster">
+                    <div className="collection-cluster__header">
+                      <div>
+                        <div className="collection-cluster__eyebrow">Groups</div>
+                        <h3 className="collection-cluster__title">Related Group Collections</h3>
+                        <div className="collection-cluster__meta">
+                          {visibleGroupEntries.length}개 그룹에서 관련 문서를 찾을 수 있다.
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="collection-group-grid">
+                      {visibleGroupEntries.map((entry) => (
+                        <div key={entry.group} className="collection-group-card">
+                          <div className="collection-group-card__header">
+                            <div>
+                              <div className="collection-group-card__eyebrow">Group</div>
+                              <h4 className="collection-group-card__title">
+                                {formatCollectionLabel(entry.group)}
+                              </h4>
+                              <div className="collection-group-card__meta">
+                                {entry.posts.length} related document{entry.posts.length === 1 ? '' : 's'}
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => onSearchQuery(`group:${entry.group}`)}
+                              className="collection-cluster__action"
+                            >
+                              Open Search
+                            </button>
+                          </div>
+
+                          <div className="collection-group-card__list">
+                            {entry.posts.slice(0, 5).map((relatedPost) => (
+                              <button
+                                key={relatedPost.id}
+                                type="button"
+                                onClick={() => onOpenPostBySlug(relatedPost.slug)}
+                                className="collection-group-item"
+                              >
+                                <span className="collection-group-item__title">{relatedPost.title}</span>
+                                <span className="collection-group-item__category">{relatedPost.category}</span>
+                              </button>
+                            ))}
+                          </div>
+
+                          {entry.posts.length > 5 && (
+                            <div className="collection-group-card__more">
+                              +{entry.posts.length - 5} more in this group
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+            </>
           )}
         </section>
       )}

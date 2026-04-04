@@ -68,8 +68,8 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                 : 'Integrated Search';
 
   return (
-    <div className="relative min-h-[100dvh] w-full overflow-x-hidden bg-hud-bg font-ui text-[#e0fbfc]">
-      <div className="relative z-10 flex min-h-[100dvh] flex-col p-4 md:h-screen md:min-h-0 md:p-8">
+    <div className="relative h-full min-h-0 w-full overflow-x-hidden bg-hud-bg font-ui text-[#e0fbfc]">
+      <div className="relative z-10 flex h-full min-h-0 flex-col overflow-hidden p-4 md:p-8">
         <header className="mb-4 flex flex-col gap-4 pb-4 md:pb-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-4 md:gap-6">
             <button
@@ -138,8 +138,8 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
           </div>
         </div>
 
-        <div className="flex-1 overflow-hidden border border-neon-cyan/20 bg-black/30 backdrop-blur-md">
-          <div className="custom-scrollbar h-full overflow-y-auto px-4 py-4 md:px-6">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden border border-neon-cyan/20 bg-black/30 backdrop-blur-md">
+          <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto px-4 py-4 md:px-6">
             {matchedPosts.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center text-center text-white/28">
                 <Search className="mb-4 h-12 w-12 text-neon-cyan/35" />
@@ -154,13 +154,21 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                   const CategoryIcon = CATEGORY_ICON_MAP[post.category];
 
                   return (
-                    <motion.button
+                    <motion.article
                       key={post.id}
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.03 }}
                       onClick={() => onOpenPost(post.category, post.slug)}
-                      className="w-full border border-neon-cyan/14 bg-neon-cyan/[0.02] px-4 py-4 text-left transition-colors hover:bg-neon-cyan/[0.05] md:px-6 md:py-5"
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          onOpenPost(post.category, post.slug);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      className="w-full cursor-pointer border border-neon-cyan/14 bg-neon-cyan/[0.02] px-4 py-4 text-left transition-colors hover:bg-neon-cyan/[0.05] md:px-6 md:py-5"
                     >
                       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                         <div className="min-w-0">
@@ -222,7 +230,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                           ))}
                         </div>
                       </div>
-                    </motion.button>
+                    </motion.article>
                   );
                 })}
               </div>

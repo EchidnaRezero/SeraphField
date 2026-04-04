@@ -177,20 +177,20 @@ flowchart LR
 - 외부 링크는 새 탭으로 엽니다.
 - 수식은 `remark-math`와 `rehype-katex`를 통해 렌더링합니다.
 - Mermaid는 fenced `mermaid` 코드 블록만 지원합니다.
+- 모바일 전용 수식 보정과 Mermaid 조작 방식은 `docs/SITE_MOBILE_SPEC.md`를 기준으로 봅니다.
 
 ## 7. 반응형 레이아웃
 
 - `Lobby.tsx`
   - 데스크톱은 좌측 HUD + 우측 패널
-  - 모바일은 가로 스크롤 카테고리 메뉴 + 하단 스택 패널
 - `Archive.tsx`
   - 데스크톱은 문서 목록 / 본문 / TOC 3열
-  - 모바일은 상하 스택
 - `SearchResults.tsx`, `ReferenceLog.tsx`, `ProfilePage.tsx`
-  - 좁은 화면에서 세로 흐름으로 재배치
+  - 공통 구조를 유지하면서 화면 폭에 따라 재배치
 - `ReferenceLog.tsx`
   - 데스크톱은 표형
-  - 모바일은 카드형
+
+- 모바일 전용 화면 구조와 조작 방식은 `docs/SITE_MOBILE_SPEC.md`에 따로 정리합니다.
 
 ## 8. 리포지토리 버전 추적
 
@@ -200,11 +200,12 @@ flowchart TD
     MD["REPO 문서"] --> BUILD
     BUILD --> POSTS["posts.json versions[]"]
     POSTS --> TRACKED["trackedRepositories"]
-    TRACKED --> LOBBY["Lobby 우측 목록"]
+    TRACKED --> LOBBY["Lobby desktop panel"]
     TRACKED --> TABLE["ReferenceLog"]
 ```
 
 - `REPO` 카테고리 문서의 버전 정보만 집계합니다.
+- 로비 노출 방식의 모바일 차이는 `docs/SITE_MOBILE_SPEC.md`를 기준으로 봅니다.
 
 ## 9. 배포와 검증
 
@@ -232,6 +233,8 @@ flowchart TD
 - 아카이브 TOC/필터링 규칙 변경: `src/lib/archive.ts`
 - 로비 UI 설정 기본값 변경: `src/lib/lobbySettings.ts`
 - Markdown/수식/코드 블록 렌더링 변경: `src/components/ArchiveMarkdown.tsx`
+- Mermaid 전용 렌더링 변경: `src/components/MermaidBlock.tsx`
+- 모바일 수식 보정 변경: `src/components/ResponsiveMathBlock.tsx`
 - TOC 화면 구조 변경: `src/components/ArchiveToc.tsx`
 - 콘텐츠 집계 변경: `src/data/content.ts`
 - 콘텐츠 입력 검증 규칙 변경: `scripts/content-validation.mjs`

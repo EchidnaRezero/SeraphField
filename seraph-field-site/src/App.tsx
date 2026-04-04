@@ -30,6 +30,13 @@ export default function App() {
   const [initialSearchQuery, setInitialSearchQuery] = useState('');
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [pendingView, setPendingView] = useState<AppView | null>(null);
+  const [isMobileViewport, setIsMobileViewport] = useState(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    return window.innerWidth < 1024;
+  });
 
   useEffect(() => {
     const syncViewFromLocation = () => {
@@ -64,6 +71,31 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileViewport(window.innerWidth < 1024);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  const beginViewTransition = (nextView: AppView) => {
+    if (isMobileViewport) {
+      setPendingView(null);
+      setIsTransitioning(false);
+      setView(nextView);
+      return;
+    }
+
+    setPendingView(nextView);
+    setIsTransitioning(true);
+  };
+
   const handleEnter = (category?: Category, slug?: string) => {
     if (category) {
       setInitialCategory(category);
@@ -79,32 +111,28 @@ export default function App() {
       navigateToHashRoute({ view: 'archive' });
     }
 
-    setPendingView('archive');
-    setIsTransitioning(true);
+    beginViewTransition('archive');
   };
 
   const handleBack = () => {
     setInitialPostSlug(undefined);
     setInitialSearchQuery('');
     navigateToHashRoute({ view: 'lobby' });
-    setPendingView('lobby');
-    setIsTransitioning(true);
+    beginViewTransition('lobby');
   };
 
   const handleOpenReferences = () => {
     setInitialPostSlug(undefined);
     setInitialSearchQuery('');
     navigateToHashRoute({ view: 'references' });
-    setPendingView('references');
-    setIsTransitioning(true);
+    beginViewTransition('references');
   };
 
   const handleOpenProfile = () => {
     setInitialPostSlug(undefined);
     setInitialSearchQuery('');
     navigateToHashRoute({ view: 'profile' });
-    setPendingView('profile');
-    setIsTransitioning(true);
+    beginViewTransition('profile');
   };
 
   const handlePostOpen = (slug: string, category: Category) => {
@@ -123,8 +151,7 @@ export default function App() {
     setInitialPostSlug(undefined);
     setInitialSearchQuery(query.trim());
     navigateToHashRoute({ view: 'search', query: query.trim() });
-    setPendingView('search');
-    setIsTransitioning(true);
+    beginViewTransition('search');
   };
 
   const handleTransitionComplete = () => {
@@ -143,16 +170,17 @@ export default function App() {
   );
 
   return (
-    <div className="w-full h-screen bg-hud-bg cursor-none overflow-hidden">
+    <div className={`h-screen w-full overflow-hidden bg-hud-bg ${isMobileViewport ? '' : 'cursor-none'}`}>
       <div className="scanlines" />
       <div className="vignette" />
-      <QuantumField />
-      <CustomCursor />
-      
-      <AnnihilationTransition 
-        isActive={isTransitioning} 
-        onComplete={handleTransitionComplete} 
-      />
+      {!isMobileViewport && <QuantumField />}
+      {!isMobileViewport && <CustomCursor />}
+      {!isMobileViewport && (
+        <AnnihilationTransition
+          isActive={isTransitioning}
+          onComplete={handleTransitionComplete}
+        />
+      )}
 
       <AnimatePresence mode="wait">
         {view === 'lobby' ? (
