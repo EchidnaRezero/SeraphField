@@ -38,10 +38,10 @@ flowchart LR
 
 ## 각 층의 분기 포인트
 
-- `Gaussian law의 모임`
+- Gaussian law의 모임
   - `(1)` 중에서, 모든 선형결합이 가우시안이 되는 law만 모아 둔 층이다.
   - 예를 들어 분산은 유한해도 어떤 방향으로 보면 가우시안이 아닌 law는 `(1)`에는 들어가도 `(2)`에는 들어오지 못한다.
-- `centered Gaussian law의 모임`
+- centered Gaussian law의 모임
   - `(2)` 중에서, 평균이 $0$인 경우만 모아 둔 층이다.
   - 예를 들어 평균이 $m\neq 0$인 Gaussian law는 `(2)`에는 들어가도 `(3)`에는 들어오지 못한다.
 

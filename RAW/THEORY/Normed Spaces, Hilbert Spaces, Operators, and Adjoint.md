@@ -39,13 +39,13 @@ flowchart LR
 
 ## 각 층의 분기 포인트
 
-- `Banach space의 모임`
+- Banach space들의 모임
   - `(1)` 중에서, Cauchy sequence가 그 공간 안에서 실제로 수렴하는 경우만 모아 둔 층이다.
   - 예를 들어 다항식의 공간에 $\|\cdot\|_\infty$ norm만 두고 완비화하지 않으면 `(1)`에는 들어가도 `(2)`에는 들어오지 못한다.
-- `Hilbert space의 모임`
+- Hilbert space들의 모임
   - `(2)` 중에서, norm이 inner product에서 오는 경우만 모아 둔 층이다.
   - 예를 들어 $\ell^1$은 완비라서 `(2)`에는 들어가도 그 norm이 inner product에서 오지 않으므로 `(3)`에는 들어오지 못한다.
-- `L²형 Hilbert space의 모임`
+- 적분 내적으로 읽히는 $L^2$형 Hilbert space들의 모임
   - `(3)` 중에서, 내적이 적분 형태로 주어져 projection과 adjoint 계산에 바로 쓰이는 공간들만 모아 둔 층이다.
   - 예를 들어 일반 Hilbert space는 `(3)`에는 들어가도 곧바로 함수의 적분 내적으로 읽히지 않으면 `(4)`의 전형적인 예시는 아니다.
 

@@ -41,16 +41,16 @@ flowchart LR
 
 ## 각 층의 분기 포인트
 
-- `weakly differentiable function의 모임`
+- 약한 미분이 가능한 함수들의 모임
   - `(1)` 중에서, 점마다 도함수를 요구하지 않아도 적분 관계로 미분을 잡을 수 있는 함수들만 모아 둔 층이다.
   - 예를 들어 계단함수처럼 jump를 가진 함수는 `(1)`에는 들어가도 weak derivative가 함수로 잡히지 않으면 `(2)`에는 들어오지 못한다.
-- `W^{1,p}(Ω)의 모임`
+- $W^{1,p}(\Omega)$ 함수들의 모임
   - `(2)` 중에서, 함수와 weak derivative가 함께 $L^p$에 들어오는 경우만 모아 둔 층이다.
   - 예를 들어 weak derivative는 있어도 그 derivative가 $L^p$에 속하지 않으면 `(2)`에는 들어가도 `(3)`에는 들어오지 못한다.
-- `H¹(Ω)의 모임`
+- $H^1(\Omega)$ 함수들의 모임
   - `(2)` 중에서, $L^2$ 구조까지 써서 inner product와 projection을 함께 다룰 수 있는 경우만 모아 둔 층이다.
   - 예를 들어 $W^{1,1}$ 함수는 `(2)`에는 들어가도 $L^2$ 수준의 제어가 없으면 `(4)`에는 들어오지 못한다.
-- `test function C_c^∞(Ω)의 모임`
+- test function $C_c^\infty(\Omega)$를 이루는 함수들의 모임
   - `(4)` 중에서, smooth하고 compact support를 가져 integration by parts에 바로 넣을 수 있는 함수들만 모아 둔 층이다.
   - 예를 들어 $H^1(\Omega)$ 함수라도 경계까지 살아 있거나 매끈하지 않으면 `(4)`에는 들어가도 `(5)`에는 들어오지 못한다.
 

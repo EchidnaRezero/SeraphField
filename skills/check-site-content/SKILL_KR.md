@@ -1,4 +1,4 @@
-이 문서는 한국어 사용자용 안내 문서이며, 원칙적으로 [SKILL.md](/C:/Projects/YUKINET/skills/check-site-content/SKILL.md)와 같은 내용을 한국어로 설명합니다.
+이 문서는 한국어 사용자용 안내 문서이며, 원칙적으로 [SKILL.md](./SKILL.md)와 같은 내용을 한국어로 설명합니다.
 
 # Check Site Content
 
@@ -66,15 +66,18 @@
 
 ### 수식
 
-수식 표기와 렌더링의 세부 규칙은 `write-math-notation`을 같이 봅니다.
+- 본문 수식은 인라인이면 `$...$`, 블록이면 `$$...$$`를 씁니다.
+- `$` 짝이 맞는지 확인합니다.
+- TeX를 inline code 안에 넣지 않습니다.
+- Mermaid 라벨은 TeX 명령을 렌더링하지 않습니다.
+- Markdown 표 셀에는 LaTeX를 넣지 말고, 유니코드 기호를 쓰거나 수식을 표 밖으로 뺍니다.
 
 ### Mermaid
 
-공통 다이어그램 규칙은 `write-diagrams-and-visualizations`을 같이 봅니다.
-
 사이트는 language가 정확히 `mermaid`인 fenced code block에서만 Mermaid를 지원합니다.
-
-콘텐츠 Markdown 안의 다이어그램은 구조를 보여 주는 수준으로 유지합니다. 박스 안에 조밀한 수식이나 긴 예외 설명이 많이 들어가야 하면, 수식은 prose나 블록 수식으로 옮기고 다이어그램은 짧게 둡니다.
+- 한 다이어그램 안에서는 화살표 의미를 하나로 통일합니다.
+- 추이적 연결과 직접 연결이 둘 다 필요하면, 한 그림에 섞기보다 다이어그램을 나누는 쪽을 먼저 검토합니다.
+- 박스 라벨과 화살표 라벨은 렌더된 화면에서 읽기 쉬울 만큼 짧게 유지합니다.
 
 ## heading과 TOC 규칙
 
@@ -130,12 +133,11 @@
 조금 복잡한 Markdown을 저장하기 전에 아래를 확인합니다.
 
 - frontmatter가 파서 계약과 맞는가?
-- 문서에 다이어그램이 있다면 `write-diagrams-and-visualizations`을 적용했는가?
-- Mermaid 다이어그램이 모두 ` ```mermaid ` fenced block인가?
+- 문서에 다이어그램이 있다면 Mermaid 블록 문법과 라벨 길이가 사이트 제약과 맞는가?
 - 표가 spacing 흉내가 아니라 GFM 표 문법인가?
 - TOC에 보여야 하는 섹션이 `##`인가?
 - 체크리스트가 GFM checkbox 문법인가?
-- 문서에 수식이 있다면 `write-math-notation`을 적용했는가?
+- 문서에 수식이 있다면 구분자, 표 셀, Mermaid 라벨이 사이트 렌더링 한계와 맞는가?
 - raw HTML을 불필요하게 쓰지 않았는가?
 
 ## 렌더링 버그가 나면 보는 순서
@@ -145,6 +147,6 @@
 3. 렌더러 문제인지, 문서 작성 문제인지 먼저 구분합니다.
 4. `seraph-field-site/src/components/ArchiveMarkdown.tsx`를 봅니다.
 5. `seraph-field-site/src/index.css`를 봅니다.
-6. 문법은 맞는데 문서 성격이 어긋난다면 `write-raw-content-common`과 해당 카테고리 skill로 돌아갑니다.
+6. 문법은 맞는데 문서 모양이 어색하면, heading, 메타데이터, 문서 구조를 실제 내용 역할에 맞게 다시 씁니다.
 
 실제 원인이 미지원 문법인데, 그걸 다른 문서 종류로 몰래 고쳐서 덮지 않습니다.

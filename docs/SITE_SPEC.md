@@ -1,6 +1,6 @@
 # Seraph Field 구조 및 사양
 
-이 문서는 현재 사이트 구조, 콘텐츠 빌드 구조, 검색 구조, 라우팅, 렌더링, 수정 지점을 한 곳에 모아 둔 원본 사양 문서입니다.
+사이트 구조, 콘텐츠 빌드 구조, 검색 구조, 라우팅, 렌더링, 수정 지점을 한 곳에서 확인하는 운영 사양입니다.
 
 ## 1. 디렉터리 구조
 
@@ -12,6 +12,7 @@ flowchart TD
     SCRATCH["SCRATCH/"]
     BLOG["seraph-field-site/"]
     TEST["seraph-field-site/tests/"]
+    SEARCH_TEST["seraph-field-site/tests/search/"]
     DOC["docs/SITE_SPEC.md"]
 
     ROOT --> RAW
@@ -19,6 +20,7 @@ flowchart TD
     ROOT --> SCRATCH
     ROOT --> BLOG
     ROOT --> TEST
+    TEST --> SEARCH_TEST
     ROOT --> DOC
 
     BLOG --> SRC["src/"]
@@ -26,6 +28,10 @@ flowchart TD
     BLOG --> SCRIPTS["scripts/"]
     BLOG --> DIST["dist/"]
 ```
+
+- `SCRATCH/`는 Git으로 추적하지 않는 private 거친 초안 폴더입니다.
+- `DRAFT/`는 Git으로 추적하는 작업중 문서 폴더입니다.
+- `RAW/`는 사이트 빌드 입력으로 쓰는 최종 공개 원본 폴더입니다.
 
 ## 2. 콘텐츠와 사이트 파이프라인
 
@@ -78,7 +84,7 @@ flowchart TD
         BUILD_CONTENT["scripts/build-content.mjs"]
     end
 
-    TESTS["seraph-field-site/tests/*.test.ts"]
+    TESTS["seraph-field-site/tests/search/*.test.ts"]
 
     APP --> LOBBY
     APP --> ARCHIVE
@@ -138,8 +144,13 @@ flowchart TD
 - `title-body:...`
 - `group:...`
 - `series:...`
+- `#Flow Matching`
 - `#tag1 and #tag2`
 - `#tag1 or #tag2`
+
+- 태그 검색은 `#`로 시작하면 태그 스코프로 해석합니다.
+- 태그 검색에서 `and` 또는 `or`가 없으면 입력 전체를 한 태그로 봅니다.
+- 태그 검색에서 여러 태그를 찾을 때만 `and`, `or`로 나눕니다.
 
 ```mermaid
 flowchart LR
@@ -195,13 +206,20 @@ flowchart TD
 
 - `REPO` 카테고리 문서의 버전 정보만 집계합니다.
 
-## 9. 배포
+## 9. 배포와 검증
 
-1. `RAW` 또는 프론트 코드를 수정합니다.
-2. `npm run build`를 실행합니다.
-3. `dist/`를 GitHub Pages로 배포합니다.
+최종 게시 기준 흐름은 아래 순서를 따릅니다.
+
+1. 먼저 바뀐 범위를 구분합니다.
+   - 콘텐츠만 바뀌었는지
+   - UI 코드도 함께 바뀌었는지
+2. 공통으로 `npm run content:build`를 실행해 `RAW/**/*.md`를 JSON으로 다시 생성합니다.
+3. 최종 게시 전 검증으로 `npm run lint`, `npm test`, `npm run build`를 순서대로 실행합니다.
+4. 첫 커밋이나 첫 푸시 전에는 `local.settings.json`의 선택을 기준으로 repo-local Git identity를 설정합니다.
+5. 브랜치를 push한 뒤 GitHub Actions와 GitHub Pages 배포 결과를 확인합니다.
 
 - `vite.config.ts`는 GitHub Pages 호환을 위해 `base: './'`를 사용합니다.
+- 배포 절차의 상세 기준은 `skills/publish-site-content-pipeline/SKILL.md`를 기준으로 봅니다.
 
 ## 10. 수정 지점
 
@@ -209,6 +227,7 @@ flowchart TD
 - 프로필 정보 변경: `src/config/siteProfile.ts`
 - 카테고리 변경: `src/config/categories.ts`
 - 검색 문법/검색 범위/점수 변경: `src/features/search/`
+- 검색 테스트 추가/갱신: `seraph-field-site/tests/search/*.test.ts`
 - 해시 규칙 변경: `src/lib/routes.ts`
 - 아카이브 TOC/필터링 규칙 변경: `src/lib/archive.ts`
 - 로비 UI 설정 기본값 변경: `src/lib/lobbySettings.ts`
@@ -217,4 +236,5 @@ flowchart TD
 - 콘텐츠 집계 변경: `src/data/content.ts`
 - 콘텐츠 입력 검증 규칙 변경: `scripts/content-validation.mjs`
 - 콘텐츠 빌드 규칙 변경: `scripts/build-content.mjs`
+- 검색 관련 테스트는 `seraph-field-site/tests/search/` 아래에 모읍니다.
 - 테스트 기준 갱신: `seraph-field-site/tests/*.test.ts`, `npm test`

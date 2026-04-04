@@ -1,4 +1,4 @@
-이 문서는 한국어 사용자용 안내 문서이며, 원칙적으로 [SKILL.md](/C:/Projects/YUKINET/skills/write-diagrams-and-visualizations/SKILL.md)와 같은 내용을 한국어로 설명합니다.
+이 문서는 한국어 사용자용 안내 문서이며, 원칙적으로 [SKILL.md](./SKILL.md)와 같은 내용을 한국어로 설명합니다.
 
 # Write Diagrams And Visualizations
 
@@ -6,8 +6,8 @@
 
 ## 이 스킬을 쓰는 경우
 
-플로우차트, 표, 그래프, Mermaid, 이미지 등 시각화 도구를 Markdown에서 쓸 때 적용합니다.
-이 스킬은 시각화의 공통 규칙을 정하고, 세부 상황별로 어느 스킬을 봐야 하는지 안내합니다.
+플로우차트, Mermaid, 그 밖의 다이어그램 구조를 Markdown에서 쓸 때 적용합니다.
+이 스킬은 다이어그램 구조와 Mermaid 작성 규칙만 다룹니다.
 
 ## 공통 다이어그램 계약
 
@@ -24,10 +24,11 @@
 
 - Mermaid는 language가 정확히 `mermaid`인 fenced code block으로만 씁니다.
 - 들여쓰기만 한 Mermaid 텍스트, Mermaid 텍스트를 raw HTML로 감싸는 방식, `mermaid` fenced block이 아닌 다른 문법은 쓰지 않습니다.
+- Mermaid 라벨 안에 진짜 수식, 긴 단서, 긴 문장이 필요해지면 그 내용은 다이어그램 밖 prose나 블록 수식으로 빼고, 라벨 자체는 짧게 유지합니다.
+- 가능하면 화살표 라벨은 박스 라벨보다 더 짧게 씁니다. 화살표 설명이 길어져 간격을 크게 먹기 시작하면, 그 전이 이유는 다이어그램 아래 본문으로 옮깁니다.
 
-## 세부 규칙을 볼 스킬
+## 범위 경계
 
-- 사이트 렌더 기준과 `RAW/**/*.md`용 Mermaid 점검은 `check-site-content`를 봅니다.
-- Mermaid 라벨 안의 수학 비슷한 표기나 다이어그램 주변의 수학 표기 선택은 `write-math-notation`을 봅니다.
-- THEORY 문서의 전체상, 분기 포인트, 문서 로드맵, 증명 로드맵은 `write-raw-content-theory`를 봅니다.
-- `README.md`와 `docs/**/*.md`의 프로젝트 문서용 다이어그램은 이 스킬 자체를 봅니다.
+- 이 스킬은 다이어그램 모양, 화살표 의미, Mermaid 블록 형식, 라벨 길이를 다룰 때 씁니다.
+- 일반적인 표 서식 가이드나 이미지 배치 가이드로 쓰지 않습니다.
+- 다이어그램 안에 긴 수식, 긴 단서, 문단 길이 설명이 필요하면 그 내용은 주변 본문으로 옮기고, 다이어그램은 구조만 남깁니다.

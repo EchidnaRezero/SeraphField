@@ -69,15 +69,18 @@ Prefer GFM syntax over raw HTML tables.
 
 ### Math
 
-For math notation and rendering details, also use `write-math-notation`.
+- Body math should use `$...$` for inline math and `$$...$$` for display math.
+- Keep `$` delimiters balanced.
+- Do not put TeX inside inline code spans.
+- Mermaid labels do not render TeX commands.
+- Markdown table cells should avoid LaTeX; use Unicode symbols or move the math out of the table.
 
 ### Mermaid
 
-For shared diagram rules, also use `write-diagrams-and-visualizations`.
-
 The site supports Mermaid only through fenced code blocks whose language is exactly `mermaid`.
-
-Keep content Markdown diagrams structural. If a diagram would need dense formulas or long caveats inside the boxes, move those formulas into nearby prose or display math and keep the diagram itself short.
+- Keep one arrow meaning per diagram.
+- If both a transitive chain and a direct edge are needed, prefer separate diagrams.
+- Keep box labels and edge labels short enough to stay readable in the rendered page.
 
 ## Heading And TOC Rules
 
@@ -133,12 +136,11 @@ Use raw HTML only when there is no equivalent supported Markdown form and the us
 Before saving a document that uses richer Markdown, check these points:
 
 - Does the frontmatter still satisfy the parser contract?
-- If the document contains diagrams, has `write-diagrams-and-visualizations` been applied?
-- Are all Mermaid diagrams fenced as `mermaid`?
+- If the document contains diagrams, do the Mermaid blocks use supported syntax and readable labels?
 - Are all tables written in GFM table syntax instead of ad hoc spacing?
 - Are TOC-worthy sections written as `##` headings?
 - Are task lists written with GFM checkbox syntax?
-- If the document contains math, has `write-math-notation` been applied?
+- If the document contains math, do the delimiters, table cells, and Mermaid labels follow the site's rendering limits?
 - Is raw HTML avoided unless truly necessary?
 
 ## When Rendering Bugs Appear
@@ -150,6 +152,6 @@ Debug in this order:
 3. Check whether the problem is authoring, not rendering
 4. Check `seraph-field-site/src/components/ArchiveMarkdown.tsx`
 5. Check `seraph-field-site/src/index.css`
-6. If syntax is valid but the document shape still feels wrong, move to `write-raw-content-common` and the relevant category skill
+6. If syntax is valid but the document shape still feels wrong, rewrite the document so its headings, metadata, and structure match its actual content role
 
 Do not "fix" rendering issues by silently rewriting content into a different document type when the real problem is unsupported syntax.

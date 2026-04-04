@@ -1,4 +1,4 @@
-이 문서는 한국어 사용자용 안내 문서이며, 원칙적으로 [SKILL.md](/C:/Projects/YUKINET/skills/write-math-notation/SKILL.md)와 같은 내용을 한국어로 설명합니다.
+이 문서는 한국어 사용자용 안내 문서이며, 원칙적으로 [SKILL.md](./SKILL.md)와 같은 내용을 한국어로 설명합니다.
 
 # Write Math Notation
 
@@ -17,7 +17,7 @@
 - Mermaid 라벨에 수학 비슷한 표기가 필요하면 `Δ`, `σ`, `∫`, `⊂`, `→` 같은 유니코드 기호나 plain words를 씁니다.
 - Mermaid 라벨 안에는 `\Delta`, `\sigma`, `\int` 같은 TeX 명령을 쓰지 않습니다.
 - `Delta`, `sigma`처럼 풀어 쓴 말보다 실제 기호가 더 분명하면 그 기호를 씁니다.
-- 공통 다이어그램 구조 선택 규칙은 `write-diagrams-and-visualizations`을 같이 봅니다.
+- Mermaid 라벨 안에 수학이 들어갈 때는 라벨을 짧게 유지하고, 한 다이어그램 안에서는 화살표 의미를 하나로 통일합니다.
 - Markdown 표 셀은 LaTeX를 넣기에 좋은 자리가 아닙니다. 유니코드 기호를 쓰거나 수식을 표 밖으로 빼는 편이 낫습니다.
 
 ## 본문 수식
@@ -47,7 +47,7 @@
 - 블록 수식이 모두 `$$...$$`인가?
 - `$` 짝이 모두 맞는가?
 - 수식이 들어간 줄이 백틱이나 inline code로 감싸져 있지 않은가?
-- 문서에 다이어그램이 있다면 `write-diagrams-and-visualizations`을 적용했는가?
+- 문서에 다이어그램이 있다면 Mermaid 라벨이 TeX 없이 짧게 유지되는가?
 - Markdown 표 셀 안에 LaTeX가 없는가?
 
 ## 렌더링 버그가 나면 보는 순서
@@ -56,5 +56,5 @@
 2. 본문 수식이면 구분자, `$` 짝, 코드 포맷 문제를 먼저 봅니다.
 3. Mermaid 라벨이면 TeX 명령을 빼고 유니코드 기호나 plain words로 다시 씁니다.
 4. 표 안 수식이면 표 밖으로 빼거나 유니코드 기호로 다시 씁니다.
-5. Mermaid 구조 자체가 문제면 `write-diagrams-and-visualizations`으로 이동합니다.
+5. Mermaid 구조 자체가 문제면 화살표 의미를 하나로 정리하고 라벨을 짧게 다시 그립니다.
 6. 문법이 맞는데도 계속 깨지면 사이트 렌더러를 확인합니다.

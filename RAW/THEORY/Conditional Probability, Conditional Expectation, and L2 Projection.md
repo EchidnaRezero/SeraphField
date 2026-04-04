@@ -40,13 +40,13 @@ flowchart LR
 
 ## 각 층의 분기 포인트
 
-- `𝒢-measurable L¹ random variable의 모임`
+- $\mathcal G$-measurable한 $L^1$ random variable들의 모임
   - `(1)` 중에서, 값이 $\mathcal G$ 가 구별하는 정보만으로 정해지는 적분가능 random variable만 모아 둔 층이다.
   - 예를 들어 $L^1$ random variable이라도 $\mathcal G$ 가 구별하지 못하는 두 점에 서로 다른 값을 주면 `(1)`에는 들어가도 `(2)`에는 들어오지 못한다.
-- `L²(Ω, 𝒢, P)의 모임`
+- $L^2(\Omega, \mathcal G, \mathbb P)$의 모임
   - `(2)` 중에서, 제곱까지 적분가능하여 $L^2$ projection을 쓸 수 있는 경우만 모아 둔 층이다.
   - 예를 들어 $\mathcal G$-measurable이지만 제곱적분가능하지 않은 random variable은 `(2)`에는 들어가도 `(3)`에는 들어오지 못한다.
-- `𝒢-사건의 indicator random variable의 모임`
+- $\mathcal G$-사건의 indicator random variable들의 모임
   - `(3)` 중에서, 어떤 $\mathcal G$-사건의 여부만 $0$과 $1$로 적는 random variable만 모아 둔 층이다.
   - 예를 들어 일반 $\mathcal G$-measurable $L^2$ random variable은 `(3)`에는 들어가도 `(4)`에는 들어오지 못한다.
 

@@ -8,7 +8,8 @@ Desktop.ini
 # Root local artifacts
 *.log
 test/
-SCRATCH/
+SCRATCH/*
+!SCRATCH/.gitkeep
 
 # Frontend dependencies / build outputs
 seraph-field-site/node_modules/

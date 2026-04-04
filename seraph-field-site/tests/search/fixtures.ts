@@ -1,0 +1,58 @@
+import type { Post, SearchIndexEntry } from '../../src/types';
+
+export const searchFixturePosts: Post[] = [
+  {
+    id: 'a',
+    slug: 'a',
+    title: 'Flow Matching Overview',
+    date: '2026-03-20',
+    category: 'PAPER',
+    tags: ['Flow Matching', 'ODE'],
+    groups: ['diffusion-foundations'],
+    series: 'diffusion-reading',
+    seriesTitle: 'Diffusion Reading',
+    seriesOrder: 1,
+    summary: 'Flow Matching summary',
+    content: '# A',
+  },
+  {
+    id: 'b',
+    slug: 'b',
+    title: 'Vector Fields',
+    date: '2026-03-19',
+    category: 'THEORY',
+    tags: ['Math', 'Vector'],
+    groups: ['vector-calculus'],
+    series: 'diffusion-reading',
+    seriesTitle: 'Diffusion Reading',
+    seriesOrder: 2,
+    summary: 'Vector field basics',
+    content: '# B',
+  },
+  {
+    id: 'c',
+    slug: 'c',
+    title: 'Training Notes',
+    date: '2026-03-18',
+    category: 'IMPLEMENT',
+    tags: ['Training', 'Probability Flow ODE'],
+    groups: ['implementation-notes'],
+    summary: 'Implementation notes',
+    content: '# C',
+  },
+];
+
+export const searchFixtureIndexEntries: SearchIndexEntry[] = searchFixturePosts.map((post) => ({
+  id: post.id,
+  slug: post.slug,
+  title: post.title,
+  date: post.date,
+  category: post.category,
+  tags: post.tags,
+  groups: post.groups,
+  series: post.series,
+  seriesTitle: post.seriesTitle,
+  seriesOrder: post.seriesOrder,
+  summary: post.summary,
+  rawText: `${post.title} ${post.summary} ${post.tags.join(' ')}`,
+}));

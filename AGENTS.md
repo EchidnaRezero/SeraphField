@@ -10,9 +10,11 @@
 ## Tracked public content safety
 - Treat every Git-tracked public-facing content file such as `DRAFT/**/*.md` and `RAW/**/*.md` as public repository content.
 - Do not add personal identifiers to Git-tracked public-facing content such as `DRAFT/**/*.md` or `RAW/**/*.md`: real names, emails, phone numbers, handles, social IDs, personal URLs, local file paths, private workspace links, or internal-only notes.
+- If a tracked document must refer to a path above the project root, use generalized placeholders such as `<project-root>/...` or `<user-home>/...` instead of machine-specific absolute paths.
 - If a draft or source text contains a personal account or author label, replace the public-facing default identity with `Echidna`.
 - If additional people, aliases, or account-like placeholders are needed, replace them with Heaven Burns Red character names or game codes from `RAW/hbr_charlist_2025_08_08.csv`.
 - Remove stray AI-authorship traces, private TODOs, and prompt fragments before saving Git-tracked public-facing Markdown.
+- The official GitHub Pages deploy URL in `README.md` is public-facing by design and may be written there as the canonical deploy address.
 
 ## RAW content authoring
 - Keep RAW content publishable as-is in a public study/portfolio repository.

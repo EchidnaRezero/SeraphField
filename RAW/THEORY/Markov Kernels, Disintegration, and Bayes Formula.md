@@ -38,10 +38,10 @@ flowchart LR
 
 ## 각 층의 분기 포인트
 
-- `deterministic kernel의 모임`
+- deterministic kernel의 모임
   - `(1)` 중에서, 각 $x$ 마다 다음 상태가 확률분포가 아니라 한 점으로만 정해지는 kernel만 모아 둔 층이다.
   - 예를 들어 한 상태에서 두 점에 양의 질량을 나누어 주는 kernel은 `(1)`에는 들어가도 `(2)`에는 들어오지 못한다.
-- `λ-density kernel의 모임`
+- λ-density kernel의 모임
   - `(1)` 중에서, 고정한 기준측도 $\lambda$ 에 대해 $K(dy\mid x)=k(x,y)\lambda(dy)$ 꼴로 적을 수 있는 kernel만 모아 둔 층이다.
   - 예를 들어 Dirac 질량으로만 주어지는 deterministic kernel은 일반적으로 `(1)`에는 들어가도 `(3)`에는 들어오지 못한다.
 

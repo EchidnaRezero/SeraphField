@@ -1,0 +1,4 @@
+interface:
+  display_name: "Check Project Docs"
+  short_description: "Review project docs with grouped checklists."
+  default_prompt: "Review the selected project documents before save or commit. Use grouped checklists for structure, duplication, safety, rendering, and cross-file consistency."

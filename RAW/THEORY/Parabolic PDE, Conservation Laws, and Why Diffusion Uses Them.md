@@ -40,13 +40,13 @@ flowchart LR
 
 ## 각 층의 분기 포인트
 
-- `continuity equation의 모임`
+- continuity equation의 모임
   - `(1)` 중에서, flux를 밀도와 속도장으로 적어 질량 보존을 transport 식으로 읽는 경우만 모아 둔 층이다.
   - 예를 들어 flux를 따로 주기만 한 일반 conservation law는 `(1)`에는 들어가도 `(2)`에는 들어오지 못한다.
-- `conservative parabolic PDE의 모임`
+- conservative parabolic PDE의 모임
   - `(1)` 중에서, 확산에 해당하는 2차 미분 항이 들어가 smoothing이 일어나는 식들만 모아 둔 층이다.
   - 예를 들어 순수 transport equation은 `(1)`에는 들어가도 2차 항이 없으므로 `(3)`에는 들어오지 못한다.
-- `Fokker-Planck equation의 모임`
+- Fokker-Planck equation의 모임
   - `(2)`와 `(3)`를 함께 만족하는 식들 가운데, drift와 diffusion이 확률밀도의 시간 진화로 읽히는 경우만 모아 둔 층이다.
   - 예를 들어 일반 heat equation이나 일반 continuity equation은 각각 `(3)` 또는 `(2)`에는 들어가도 `(4)`에는 바로 들어오지 못한다.
 

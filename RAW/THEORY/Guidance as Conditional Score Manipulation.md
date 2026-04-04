@@ -35,10 +35,10 @@ flowchart LR
 
 ## 각 층의 분기 포인트
 
-- `conditional law structure를 함께 가진 joint law의 모임`
+- conditional law structure를 함께 가진 joint law의 모임
   - `(1)`을 남겨 두는 데서 그치지 않고, condition 변수 $c$를 따로 붙여 $X$의 law를 조건별 family로 나누어 보는 층이다.
   - 예를 들어 $X$의 marginal law만 적어 둔 대상은 `(1)`에는 있어도 `(2)`에는 들어오지 못한다.
-- `conditional score structure까지 함께 가진 joint law의 모임`
+- conditional score structure까지 함께 가진 joint law의 모임
   - `(2)` 중에서 conditional density를 $x$에 대해 미분하여 conditional score까지 함께 다루는 층이다.
   - 예를 들어 conditional law family는 있어도 $x$-미분이 불가능한 경우는 `(2)`에는 있어도 `(3)`에는 들어오지 못한다.
 

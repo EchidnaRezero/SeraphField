@@ -357,8 +357,6 @@
 }
 
 .mermaid-wrapper {
-  border: 1px solid rgba(25, 184, 190, 0.3);
-  background: rgba(0, 0, 0, 0.85);
   margin: 1.5rem 0;
 }
 
@@ -587,22 +585,171 @@
 }
 
 .mermaid-surface {
-  padding: 1.25rem 1rem;
-  overflow-x: auto;
+  padding: 0.9rem 0.9rem 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(25, 184, 190, 0.3);
   background:
     linear-gradient(180deg, rgba(25, 184, 190, 0.05), rgba(0, 0, 0, 0)),
     rgba(4, 6, 8, 0.92);
 }
 
-.mermaid-surface svg {
-  min-width: 100%;
-  height: auto;
+.mermaid-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.55rem;
+  flex-wrap: wrap;
 }
 
-.mermaid-surface .label,
-.mermaid-surface .nodeLabel,
-.mermaid-surface .edgeLabel {
+.mermaid-toolbar__status {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  font-family: var(--font-mono), monospace;
+  color: rgba(224, 251, 252, 0.76);
+}
+
+.mermaid-toolbar__zoom {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(25, 184, 190, 0.3);
+  background: rgba(25, 184, 190, 0.08);
+  color: var(--color-neon-cyan);
+  padding: 0.2rem 0.45rem;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+}
+
+.mermaid-toolbar__hint {
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.mermaid-toolbar__controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.mermaid-toolbar__button {
+  border: 1px solid rgba(25, 184, 190, 0.34);
+  background: rgba(25, 184, 190, 0.08);
+  color: #e0fbfc;
+  min-width: 2.15rem;
+  height: 2rem;
+  padding: 0 0.55rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.92rem;
+  line-height: 1;
+  text-transform: uppercase;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.mermaid-toolbar__button:hover {
+  background: rgba(25, 184, 190, 0.18);
+  color: #fff;
+  border-color: rgba(25, 184, 190, 0.52);
+}
+
+.mermaid-toolbar__button--reset {
+  min-width: auto;
+  padding-inline: 0.7rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+
+.mermaid-transform-wrapper {
+  width: 100%;
+  min-height: 13rem;
+  overflow: hidden;
+}
+
+.mermaid-transform-wrapper--zoomed {
+  cursor: grab;
+}
+
+.mermaid-transform-wrapper--zoomed:active {
+  cursor: grabbing;
+}
+
+.mermaid-transform-content {
+  width: 100% !important;
+  display: block !important;
+}
+
+.mermaid-transform-wrapper--zoomed .mermaid-transform-content,
+.mermaid-transform-wrapper--zoomed .mermaid-diagram,
+.mermaid-transform-wrapper--zoomed .mermaid-diagram * {
+  user-select: none;
+}
+
+.mermaid-diagram {
+  width: 100%;
+  min-width: 100%;
+}
+
+.mermaid-diagram svg {
+  width: 100% !important;
+  min-width: 0;
+  height: auto;
+  display: block;
+}
+
+.mermaid-diagram .label,
+.mermaid-diagram .nodeLabel,
+.mermaid-diagram .edgeLabel {
   font-family: var(--font-body), sans-serif !important;
+  line-height: 1.35 !important;
+}
+
+.mermaid-diagram .label foreignObject,
+.mermaid-diagram .label foreignObject div {
+  overflow: visible;
+}
+
+.mermaid-diagram .label foreignObject div {
+  display: block;
+  text-align: center;
+  line-height: 1.35;
+  white-space: normal;
+}
+
+.mermaid-diagram .nodeLabel p,
+.mermaid-diagram .edgeLabel p {
+  margin: 0;
+  line-height: 1.35;
+}
+
+.mermaid-diagram .edgeLabel {
+  background: transparent !important;
+}
+
+.mermaid-diagram .edgeLabel .label rect,
+.mermaid-diagram .labelBkg {
+  fill: transparent !important;
+  background-color: transparent !important;
+  stroke: none !important;
+}
+
+@media (max-width: 767px) {
+  .mermaid-toolbar {
+    align-items: stretch;
+  }
+
+  .mermaid-toolbar__status {
+    width: 100%;
+  }
+
+  .mermaid-toolbar__controls {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .mermaid-transform-wrapper {
+    min-height: 11rem;
+  }
 }
 
 .mermaid-error {

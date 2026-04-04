@@ -37,10 +37,10 @@ flowchart LR
 
 ## 각 층의 분기 포인트
 
-- `latent autoencoding system의 모임`
+- latent autoencoding system의 모임
   - `(1)` 중에서, decoder와 prior만 두지 않고 encoder 또는 posterior 구조를 함께 두어 관측을 latent로 다시 보내는 층이다.
   - 예를 들어 prior와 decoder만 있는 순수 latent generative model은 `(1)`에는 있어도 `(2)`에는 들어오지 못한다.
-- `conditioned latent autoencoding system의 모임`
+- conditioned latent autoencoding system의 모임
   - `(2)` 중에서, latent autoencoding 구조 위에 text, class, mask 같은 조건 변수를 붙여 operator family로 다루는 층이다.
   - 예를 들어 조건 입력 없이 하나의 encoder/decoder만 두는 autoencoding system은 `(2)`에는 있어도 `(3)`에는 들어오지 못한다.
 

@@ -1,4 +1,4 @@
-이 문서는 한국어 사용자용 안내 문서이며, 원칙적으로 [SKILL.md](/C:/Projects/YUKINET/skills/write-raw-content-common/SKILL.md)와 같은 내용을 한국어로 설명합니다.
+이 문서는 한국어 사용자용 안내 문서이며, 원칙적으로 [SKILL.md](./SKILL.md)와 같은 내용을 한국어로 설명합니다.
 
 # Write RAW Content
 
@@ -14,17 +14,8 @@
 을 다룹니다.
 
 공개 안전, frontmatter, 링크, 버전 표기, 파서 호환 메타데이터는 `AGENTS.md`를 기준으로 따릅니다.
-
-실제 카테고리별 작성 규칙은 분리 후 해당 하위 스킬을 함께 봅니다.
-
-- `write-raw-content-theory`
-- `write-raw-content-paper`
-- `write-raw-content-repo`
-- `write-raw-content-implement`
-
-frontmatter, `content:build`, 표, Mermaid, TOC 같은 콘텐츠 점검이 중요하면 `check-site-content`도 같이 봅니다.
-수식 표기나 수식 렌더링 점검이 중요하면 `write-math-notation`도 같이 봅니다.
-Mermaid나 다른 시각화 구조를 Markdown에 넣는 작업이면 `write-diagrams-and-visualizations`도 같이 봅니다.
+이 스킬은 어디까지나 카테고리 판단과 문서 분리를 위한 스킬입니다.
+렌더링 규칙, 수식 표기 규칙, 다이어그램 형식 규칙을 여기서 같이 들고 있지는 않습니다.
 
 ## 섞인 RAW 초안을 주된 목적 기준으로 분류하기
 
@@ -70,7 +61,5 @@ Mermaid나 다른 시각화 구조를 Markdown에 넣는 작업이면 `write-dia
 - 초안이 필요한 만큼 역할별로 분리됐는지 확인합니다.
 - 선택한 카테고리가 문서의 주된 목적과 맞는지 확인합니다.
 - 공개 안전, 형식, 메타데이터는 `AGENTS.md` 기준을 적용했는지 확인합니다.
-- 해당 카테고리 하위 skill 기준을 적용했는지 확인합니다.
-- 콘텐츠 점검이나 렌더링 민감 문법이 중요했다면 `check-site-content`를 적용했는지 확인합니다.
-- 문서에 수식이 있다면 `write-math-notation`을 적용했는지 확인합니다.
+- 저장된 결과에 최종 카테고리가 분명히 드러나는지 확인합니다.
 - 문서가 그대로 공개 저장소에 올라가도 되는지 확인합니다.

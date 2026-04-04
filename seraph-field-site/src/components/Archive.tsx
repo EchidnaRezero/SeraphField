@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { BookOpen, ArrowLeft, Search } from 'lucide-react';
 import { CATEGORY_ITEMS } from '../config/categories';
 import { extractTableOfContents } from '../lib/archive';
-import { filterPostsByCategoryAndQuery } from '../features/search';
+import { filterPostsByCategoryAndQuery, formatSearchQuery } from '../features/search';
 import { ArchiveMarkdown } from './ArchiveMarkdown';
 import { ArchiveToc } from './ArchiveToc';
 
@@ -266,7 +266,7 @@ export const Archive: React.FC<ArchiveProps> = ({
                   <ArchiveMarkdown
                     post={selectedPost}
                     onOpenPostBySlug={openPostBySlug}
-                    onSelectTag={(tag) => onSearch?.(`#${tag}`)}
+                    onSelectTag={(tag) => onSearch?.(formatSearchQuery('tag', tag))}
                     onSearchQuery={(query) => onSearch?.(query)}
                   />
                 </motion.div>

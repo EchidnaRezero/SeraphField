@@ -25,7 +25,7 @@ Keep `SKILL_KR.md` synchronized whenever the substantive instructions in this fi
   4. numbered main sections
   5. local definition followed by a plain-language reading
   6. example blocks
-- Treat [example-brownian-motion.md](/C:/Projects/YUKINET/skills/write-raw-content-theory/example-brownian-motion.md) as the model for this spine and pacing.
+- Treat [example-brownian-motion.md](./example-brownian-motion.md) as the model for this spine and pacing.
 - If you believe a different structure fits the topic better, propose that variation to the user first and proceed only after confirmation.
 - Unless the section is the global overview itself, do not front-load later technical terms without explanation. If a later term must be mentioned early, describe it first in plain words and keep the term name brief.
 
@@ -35,8 +35,8 @@ Keep `SKILL_KR.md` synchronized whenever the substantive instructions in this fi
 - When needed, fix an ambient setting and place sets, spaces, structures, and maps inside it. The overall-picture diagram should then be drawn from the objects and maps in that ambient setting, using inclusion maps or forgetful maps as appropriate.
 - State the domain and codomain of every map.
 - Use standard mathematical notation by default. If there is no widely used standard notation, do not force an ad hoc symbolic shorthand unless the user explicitly asks for one.
-- For Markdown math syntax and rendering details, also use `write-math-notation`.
-- For shared diagram-selection rules that also apply outside THEORY notes, also use `write-diagrams-and-visualizations`.
+- Use Markdown math syntax that the site's renderer can display reliably.
+- In Mermaid labels, use plain words or Unicode symbols instead of TeX commands.
 
 ## Overall Picture
 
@@ -54,10 +54,13 @@ Keep `SKILL_KR.md` synchronized whenever the substantive instructions in this fi
 
 - After the overall picture, add a branch-point section that explains where the nearby classes split.
 - Match the branch-point items to the boxes in the overview diagram, and reuse those overview numbers instead of repeating long names.
+- Write branch-point item titles as plain text, not as inline code.
 - For each item, keep the pattern tight:
   - line 1: among the parent class, what extra condition defines this class
   - line 2: an example that stays in the parent class but does not belong here
 - When possible, phrase the first line from the parent class downward, such as “among `(2)`, ...”.
+- If the first line needs math, write it with normal body math syntax such as `$...$`; do not wrap the whole item title in backticks.
+- If the item touches a Mermaid label, keep the label as plain words or Unicode symbols instead of TeX, and keep the body math in normal `$...$` or `$$...$$` form.
 - Keep the examples concrete and short.
 
 ## Document Roadmap
@@ -72,6 +75,9 @@ Keep `SKILL_KR.md` synchronized whenever the substantive instructions in this fi
 - Those local sections should advance the note through definitions, examples, propositions, proofs, calculations, or derivations as needed.
 - When a rigorous local section would become too hard to follow on its own, add a separate local explanation subsection after it instead of diluting the formal part itself.
 - If a proof idea becomes long enough that its global flow is hard to follow in prose, draw a separate proof-roadmap diagram before the detailed proof.
+- For a long linear roadmap, prefer `flowchart TB` over `flowchart LR`. Reserve `LR` for short local transitions that still read clearly in one row.
+- Keep roadmap box labels short enough that the box still reads as a visual unit. If a box title starts reading like a sentence, shorten the box and move the nuance into nearby prose.
+- Keep roadmap edge labels shorter than the box labels. If the explanation of “why next” needs a full sentence, say the short version on the arrow and put the fuller explanation in the paragraph right below the roadmap.
 
 ## Definition And Explanation
 

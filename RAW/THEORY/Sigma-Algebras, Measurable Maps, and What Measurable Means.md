@@ -36,10 +36,10 @@ flowchart LR
 
 ## 각 층의 분기 포인트
 
-- `ℱ-measurable real random variable의 모임`
+- $\mathcal F$-measurable real random variable들의 모임
   - `(1)` 중에서, Borel 집합의 역상이 항상 $\mathcal F$-사건이 되는 함수만 모아 둔 층이다.
   - 예를 들어 $\mathcal F$가 구별하지 못하는 두 점에 서로 다른 값을 주는 함수는 `(1)`에는 들어가도 `(2)`에는 들어오지 못한다.
-- `𝒢-measurable real random variable의 모임`
+- $\mathcal G$-measurable real random variable들의 모임
   - `(2)` 중에서, 더 큰 $\mathcal F$가 아니라 더 작은 $\mathcal G$ 정보만으로 값이 정해지는 함수만 모아 둔 층이다.
   - 예를 들어 $\mathcal F$-measurable이더라도 $\mathcal G$가 구별하지 못하는 두 점에 서로 다른 값을 주면 `(2)`에는 들어가도 `(3)`에는 들어오지 못한다.
 

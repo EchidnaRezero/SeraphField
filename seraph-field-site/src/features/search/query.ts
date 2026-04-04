@@ -2,8 +2,24 @@ import type { SearchQueryOperator, SearchQueryParseResult, SearchScope } from '.
 
 export const normalizeTag = (value: string) => value.trim().replace(/^#/, '').toLowerCase();
 
-export const extractTagTerms = (value: string) =>
-  [...value.matchAll(/#([^\s,#]+)/g)].map((match) => normalizeTag(match[1] ?? ''));
+const TAG_OPERATOR_PATTERN = /\s+(and|or)\s+/i;
+
+const resolveTagOperator = (value: string): SearchQueryOperator =>
+  value.match(TAG_OPERATOR_PATTERN)?.[1]?.toLowerCase() === 'or' ? 'or' : 'and';
+
+export const extractTagTerms = (value: string) => {
+  const normalizedValue = value.trim().toLowerCase();
+  if (!normalizedValue.startsWith('#')) {
+    return [];
+  }
+
+  const operator = resolveTagOperator(normalizedValue);
+  const parts = TAG_OPERATOR_PATTERN.test(normalizedValue)
+    ? normalizedValue.split(new RegExp(`\\s+${operator}\\s+`, 'i'))
+    : [normalizedValue];
+
+  return parts.map((part) => normalizeTag(part)).filter(Boolean);
+};
 
 const PREFIX_SCOPES: Array<{ prefix: string; scope: SearchScope }> = [
   { prefix: 'title:', scope: 'title' },
@@ -38,7 +54,7 @@ export const parseSearchQuery = (value: string): SearchQueryParseResult => {
     };
   }
 
-  const operator: SearchQueryOperator = /\bor\b/i.test(normalizedValue) ? 'or' : 'and';
+  const operator = resolveTagOperator(normalizedValue);
 
   return {
     scope: 'tag',
@@ -58,17 +74,19 @@ export const formatSearchQuery = (scope: SearchScope, value: string) => {
     case 'all':
       return trimmed;
     case 'tag':
-      return trimmed
-        .split(/\s+/)
-        .map((part) => {
-          const lowerPart = part.toLowerCase();
-          if (lowerPart === 'and' || lowerPart === 'or') {
-            return lowerPart;
-          }
+      if (!TAG_OPERATOR_PATTERN.test(trimmed)) {
+        return trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
+      }
 
-          return part.startsWith('#') ? part : `#${part}`;
+      const operator = resolveTagOperator(trimmed);
+
+      return trimmed
+        .split(new RegExp(`\\s+${operator}\\s+`, 'i'))
+        .map((part) => {
+          const normalizedPart = part.trim();
+          return normalizedPart.startsWith('#') ? normalizedPart : `#${normalizedPart}`;
         })
-        .join(' ');
+        .join(` ${operator} `);
     case 'title':
       return `title:${trimmed}`;
     case 'body':

@@ -49,6 +49,12 @@ When the skill touches `RAW/**/*.md`, make sure it agrees with:
 - `skills/check-site-content/SKILL.md` when the skill concerns site content checks
 - `skills/check-site-ui-code/SKILL.md` when the skill concerns site UI code checks
 
+## Skill Independence
+
+- Only `scratch-to-raw-pipeline` and `publish-site-content-pipeline` may orchestrate other project skills.
+- All other project skills must remain self-contained and must not instruct the reader to use, apply, follow, or move to another project skill.
+- Project skills may explicitly refer to `AGENTS.md` only for repository-wide security and tracked/public document information rules.
+
 ## Final Check
 
 Before finishing a project skill:

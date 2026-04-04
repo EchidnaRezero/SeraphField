@@ -41,13 +41,13 @@ flowchart LR
 
 ## 각 층의 분기 포인트
 
-- `semigroup의 모임`
+- semigroup의 모임
   - `(1)` 중에서, 시간 합이 operator 합성이 되도록 이어지는 family만 모아 둔 층이다.
   - 예를 들어 $T_{t+s}=T_tT_s$를 만족하지 않는 일반 operator family는 `(1)`에는 들어가도 `(2)`에는 들어오지 못한다.
-- `strongly continuous semigroup의 모임`
+- strongly continuous semigroup의 모임
   - `(2)` 중에서, $t\downarrow 0$일 때 각 벡터에 대해 $T_t x\to x$가 성립하는 경우만 모아 둔 층이다.
   - 예를 들어 semigroup 법칙은 만족해도 $t=0$에서 강연속성이 깨지면 `(2)`에는 들어가도 `(3)`에는 들어오지 못한다.
-- `Markov semigroup의 모임`
+- Markov semigroup의 모임
   - `(2)` 중에서, positivity와 mass 보존을 함께 가져 확률과정의 평균 진화로 읽히는 경우만 모아 둔 층이다.
   - 예를 들어 일반 선형 semigroup는 `(2)`에는 들어가도 확률을 보존하지 않으면 `(4)`에는 들어오지 못한다.
 

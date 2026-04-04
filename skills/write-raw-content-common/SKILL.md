@@ -16,17 +16,8 @@ This skill covers:
 - how to classify and split mixed draft material across the four RAW categories
 
 For public-safe writing, frontmatter, links, version labels, and final parser-safe metadata, follow `AGENTS.md`.
-
-After deciding the split, also use the matching category skill:
-
-- `write-raw-content-theory`
-- `write-raw-content-paper`
-- `write-raw-content-repo`
-- `write-raw-content-implement`
-
-Use `check-site-content` when content checks involve frontmatter, `content:build`, tables, Mermaid, or TOC behavior.
-Use `write-math-notation` when content checks involve mathematical notation or math rendering.
-Use `write-diagrams-and-visualizations` when authoring Mermaid diagrams or other explanatory visual structures in Markdown.
+This skill is only for category choice and document splitting.
+Do not use it as a renderer rule sheet, a math-notation sheet, or a diagram-format sheet.
 
 ## Classify Mixed RAW Drafts By Dominant Purpose
 
@@ -72,7 +63,5 @@ Use these category rules:
 - confirm the draft has been split by content role where needed
 - confirm the chosen category matches the document's dominant purpose
 - confirm `AGENTS.md` has been applied for public-safe formatting and metadata
-- confirm the relevant category skill has been applied
-- confirm `check-site-content` has been applied when content checks or renderer-sensitive syntax matter
-- confirm `write-math-notation` has been applied when the document contains math
+- confirm the output category is explicit in the saved result
 - confirm the Markdown is safe to publish unchanged

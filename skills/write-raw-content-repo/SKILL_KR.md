@@ -1,4 +1,4 @@
-이 문서는 한국어 사용자용 안내 문서이며, 원칙적으로 [SKILL.md](/C:/Projects/YUKINET/skills/write-raw-content-repo/SKILL.md)와 같은 내용을 한국어로 설명합니다.
+이 문서는 한국어 사용자용 안내 문서이며, 원칙적으로 [SKILL.md](./SKILL.md)와 같은 내용을 한국어로 설명합니다.
 
 # Write REPO Content
 
