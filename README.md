@@ -8,10 +8,18 @@
 
 ## 구성
 
-- `RAW/`
-  - 공개용 Markdown 원본
+- `콘텐츠`
+  - `SCRATCH/` -> Git으로 추적하지 않는 private 초안
+  - `DRAFT/` -> Git으로 추적하는 작업중 원본
+  - `RAW/` -> 사이트에 게시하는 최종 공개 원본
 - `seraph-field-site/`
   - React + Vite 기반 정적 사이트
+- `scripts/`
+  - 콘텐츠 빌드와 검증 스크립트
+- `docs/`
+  - 사이트 구조와 프로젝트 설명 문서
+- `skills/`
+  - 프로젝트 작업용 로컬 스킬
 - `.github/workflows/deploy-blog.yml`
   - GitHub Pages 배포 워크플로
 
@@ -54,12 +62,3 @@ flowchart LR
     DRAFT -->|"최종 정리 후"| RAW["RAW/"]
     RAW -->|"content build"| SITE["seraph-field-site"]
 ```
-
-- `SCRATCH/`
-  - Git으로 추적하지 않는 private 초안
-- `DRAFT/`
-  - Git으로 추적하는 작업중 문서
-  - 공개 저장소에 push할 수 있어야 함
-  - 아직 사이트에는 게시하지 않음
-- `RAW/`
-  - 사이트에 들어가는 최종 공개 원본
