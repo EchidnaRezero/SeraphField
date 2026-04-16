@@ -28,3 +28,4 @@ seraph-field-site/.env.*
 
 # Local project settings
 local.settings.json
+.superpowers/
