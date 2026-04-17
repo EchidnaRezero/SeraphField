@@ -13,6 +13,7 @@ export interface LobbyLayoutProps {
   onOpenReferences: () => void;
   onSearch: (query: string) => void;
   onOpenProfile: () => void;
+  onOpenGraph: () => void;
   updateUiSetting: (key: keyof LobbyUiSettings, value: number) => void;
   resetUiSettings: () => void;
 }

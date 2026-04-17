@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, Database, Globe, Search, Settings, Tag } from 'lucide-react';
+import { Bell, Database, GitBranch, Globe, Search, Settings, Tag } from 'lucide-react';
 import { CATEGORY_ITEMS } from '../../config/categories';
 import { contentStats, popularTags } from '../../data/content';
 import { SITE_META } from '../../config/siteMeta';
@@ -18,6 +18,7 @@ export const LobbyMobileLayout: React.FC<LobbyLayoutProps> = ({
   onEnter,
   onSearch,
   onOpenProfile,
+  onOpenGraph,
   updateUiSetting,
   resetUiSettings,
 }) => {
@@ -114,6 +115,21 @@ export const LobbyMobileLayout: React.FC<LobbyLayoutProps> = ({
           </button>
         ))}
       </section>
+
+      <button
+        type="button"
+        onClick={onOpenGraph}
+        data-targetable="true"
+        className="w-full rounded border border-neon-cyan/20 bg-black/30 p-4 text-left backdrop-blur-sm hover:border-neon-cyan/40 touch-manipulation"
+      >
+        <div className="flex items-center gap-3">
+          <GitBranch className="h-5 w-5 text-neon-cyan/70" />
+          <div>
+            <div className="font-mono text-xs uppercase tracking-widest text-neon-cyan">Knowledge Graph</div>
+            <div className="mt-1 text-[11px] text-hud-text/60">수학 구조 관계 지도</div>
+          </div>
+        </div>
+      </button>
 
       <section className="border border-neon-cyan/38 bg-black/34 p-4 shadow-[0_0_24px_rgba(0,229,255,0.08)] backdrop-blur-md">
         <div className="mb-2 text-[10px] font-mono tracking-[0.24em] text-neon-cyan/62">{SITE_META.name}</div>

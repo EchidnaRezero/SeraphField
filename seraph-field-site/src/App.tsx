@@ -22,6 +22,9 @@ const SearchResults = lazy(() =>
 const ProfilePage = lazy(() =>
   import('./components/ProfilePage').then((module) => ({ default: module.ProfilePage })),
 );
+const KnowledgeGraph = lazy(() =>
+  import('./components/graph/KnowledgeGraph').then((module) => ({ default: module.KnowledgeGraph })),
+);
 
 export default function App() {
   const [view, setView] = useState<AppView>('lobby');
@@ -128,6 +131,13 @@ export default function App() {
     beginViewTransition('references');
   };
 
+  const handleOpenGraph = () => {
+    setInitialPostSlug(undefined);
+    setInitialSearchQuery('');
+    navigateToHashRoute({ view: 'graph', slug: 'math' });
+    beginViewTransition('graph');
+  };
+
   const handleOpenProfile = () => {
     setInitialPostSlug(undefined);
     setInitialSearchQuery('');
@@ -202,6 +212,7 @@ export default function App() {
                 onOpenReferences={handleOpenReferences}
                 onSearch={handleSearch}
                 onOpenProfile={handleOpenProfile}
+                onOpenGraph={handleOpenGraph}
               />
             </Suspense>
           </motion.div>
@@ -266,6 +277,19 @@ export default function App() {
           >
             <Suspense fallback={viewFallback}>
               <ReferenceLog onBack={handleBack} onOpenPost={handleEnter} />
+            </Suspense>
+          </motion.div>
+        ) : view === 'graph' ? (
+          <motion.div
+            key="graph"
+            initial={{ opacity: 0, scale: 1.02, filter: "blur(10px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, scale: 0.98, filter: "blur(20px)" }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="w-full h-full"
+          >
+            <Suspense fallback={viewFallback}>
+              <KnowledgeGraph onBack={handleBack} onOpenPost={handleEnter} />
             </Suspense>
           </motion.div>
         ) : (

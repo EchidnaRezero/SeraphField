@@ -1,5 +1,5 @@
 export type Category = 'THEORY' | 'REPO' | 'PAPER' | 'IMPLEMENT';
-export type AppView = 'lobby' | 'archive' | 'references' | 'search' | 'profile';
+export type AppView = 'lobby' | 'archive' | 'references' | 'search' | 'profile' | 'graph';
 export type SearchQueryOperator = 'keyword' | 'and' | 'or';
 export type SearchScope = 'all' | 'title' | 'body' | 'title-body' | 'tag' | 'group' | 'series';
 
