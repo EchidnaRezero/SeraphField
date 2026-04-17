@@ -1,7 +1,7 @@
-import type cytoscape from 'cytoscape';
 import type {GraphData} from '../../types/graph';
 
-type Stylesheet = cytoscape.Stylesheet;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Stylesheet = any;
 
 const CAT_COLORS: Record<string, string> = {
   algebra: '#6688ff',
