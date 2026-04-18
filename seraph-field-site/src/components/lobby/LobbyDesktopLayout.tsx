@@ -20,6 +20,7 @@ export const LobbyDesktopLayout: React.FC<LobbyLayoutProps> = ({
   onOpenReferences,
   onSearch,
   onOpenProfile,
+  onOpenGraph,
   updateUiSetting,
   resetUiSettings,
 }) => {
@@ -280,6 +281,22 @@ export const LobbyDesktopLayout: React.FC<LobbyLayoutProps> = ({
               </a>
             ))}
           </div>
+          <motion.button
+            type="button"
+            onClick={onOpenGraph}
+            data-targetable="true"
+            whileHover={{ scale: 1.02 }}
+            className="mt-4 w-full rounded border border-neon-cyan/20 bg-hud-bg/60 p-4 text-left backdrop-blur-sm hover:border-neon-cyan/40"
+          >
+            <div className="flex items-center gap-3">
+              <GitBranch className="h-5 w-5 text-neon-cyan/70" />
+              <div>
+                <div className="font-mono text-xs uppercase tracking-widest text-neon-cyan">Knowledge Graph</div>
+                <div className="mt-1 text-[11px] text-hud-text/60">수학 구조 관계 지도</div>
+              </div>
+            </div>
+          </motion.button>
+
           <button
             onClick={onOpenReferences}
             className="mt-5 flex w-full items-center justify-center gap-2 border border-neon-cyan/35 py-3 text-[12px] font-mono uppercase tracking-[0.2em] text-neon-cyan transition-all hover:bg-neon-cyan/12 hover:text-white touch-manipulation"

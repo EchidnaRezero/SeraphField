@@ -49,6 +49,14 @@ export default defineConfig(({mode}) => {
               return 'markdown-stack';
             }
 
+            if (id.includes('cytoscape')) {
+              return 'graph-viewer';
+            }
+
+            if (id.includes('/src/generated/graph-data.json') || id.includes('/src/generated/kg-docs.json')) {
+              return 'content-graph';
+            }
+
             if (id.includes('lucide-react')) {
               return 'icon-stack';
             }

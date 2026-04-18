@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "content:build": "node ./scripts/build-content.mjs",
+    "content:build": "node ./scripts/build-content.mjs && node ./scripts/build-graph.mjs",
+    "graph:export": "node ../KNOWLEDGE_GRAPH/export.mjs",
+    "graph:build": "node ./scripts/build-graph.mjs",
     "dev": "npm run content:build && vite --port=3000 --host=0.0.0.0",
     "build": "npm run content:build && vite build",
     "preview": "vite preview",
@@ -13,6 +15,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "cytoscape": "^3.33.2",
+    "cytoscape-fcose": "^2.2.0",
     "gray-matter": "^4.0.3",
     "katex": "^0.16.40",
     "lucide-react": "^0.577.0",
@@ -29,9 +33,11 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.2",
+    "@types/cytoscape": "^3.21.9",
     "@types/node": "^24.12.0",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@vitejs/plugin-react": "^5.0.4",
+    "better-sqlite3": "^12.9.0",
     "tailwindcss": "^4.2.2",
     "typescript": "~5.9.3",
     "vite": "^8.0.1",

@@ -66,6 +66,12 @@ export function validateFrontmatterContract(frontmatter, content, relativePath) 
     errors.push('absolute local paths are not allowed in public RAW content');
   }
 
+  if (frontmatter.kg_tags !== undefined) {
+    if (!Array.isArray(frontmatter.kg_tags) || frontmatter.kg_tags.some(t => typeof t !== 'string' || !t.trim())) {
+      errors.push('kg_tags must be a YAML string array');
+    }
+  }
+
   if (errors.length > 0) {
     throw new Error(`[${relativePath}] ${errors.join('; ')}`);
   }

@@ -43,6 +43,17 @@ export const parseHashRoute = (hashValue: string): HashRoute => {
     };
   }
 
+  if (hash === 'graph') {
+    return { view: 'graph' };
+  }
+
+  if (hash.startsWith('graph/')) {
+    return {
+      view: 'graph',
+      slug: decodeURIComponent(hash.slice('graph/'.length)),
+    };
+  }
+
   return { view: 'lobby' };
 };
 
@@ -56,6 +67,8 @@ export const buildHash = (route: HashRoute) => {
       return route.query ? `#search/${encodeURIComponent(route.query)}` : '#search';
     case 'profile':
       return '#profile';
+    case 'graph':
+      return route.slug ? `#graph/${encodeURIComponent(route.slug)}` : '#graph';
     case 'lobby':
     default:
       return '#lobby';

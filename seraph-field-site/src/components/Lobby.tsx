@@ -12,6 +12,7 @@ interface LobbyProps {
   onOpenReferences: () => void;
   onSearch: (query: string) => void;
   onOpenProfile: () => void;
+  onOpenGraph: () => void;
 }
 
 export const Lobby: React.FC<LobbyProps> = ({
@@ -19,6 +20,7 @@ export const Lobby: React.FC<LobbyProps> = ({
   onOpenReferences,
   onSearch,
   onOpenProfile,
+  onOpenGraph,
 }) => {
   const backgroundImageSrc = `${import.meta.env.BASE_URL}4th_aniv.png`;
   const [searchInput, setSearchInput] = useState('');
@@ -84,6 +86,7 @@ export const Lobby: React.FC<LobbyProps> = ({
     onOpenReferences,
     onSearch: submitSearch,
     onOpenProfile,
+    onOpenGraph,
     updateUiSetting,
     resetUiSettings,
   };
