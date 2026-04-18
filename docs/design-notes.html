@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Seraph Field — Design Notes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+KR:wght@300;400;500;700&family=Teko:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #050608;
+    --bg-panel: rgba(8,14,18,0.7);
+    --cyan: #7ff5ff;
+    --cyan-dim: rgba(127,245,255,0.55);
+    --teal: #19b8be;
+    --text: #e0fbfc;
+    --text-dim: rgba(224,251,252,0.7);
+    --text-muted: rgba(224,251,252,0.45);
+    --rule: rgba(127,245,255,0.18);
+  }
+  html, body { background: var(--bg); margin: 0; }
+  body {
+    font-family: "Noto Sans KR", sans-serif;
+    color: var(--text);
+    line-height: 1.75;
+    background:
+      radial-gradient(ellipse at top, rgba(25,184,190,0.06), transparent 60%),
+      var(--bg);
+    min-height: 100vh;
+  }
+  .doc {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 72px 40px 120px;
+  }
+
+  .brand {
+    display: flex; align-items: center; gap: 14px;
+    padding-bottom: 28px; margin-bottom: 48px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .brand-mark {
+    font-family: "Teko", sans-serif;
+    font-size: 34px;
+    color: var(--cyan);
+    text-shadow: 0 0 12px rgba(127,245,255,0.55);
+    line-height: 1;
+  }
+  .brand-name {
+    font-family: "Teko", "Share Tech Mono", sans-serif;
+    font-weight: 500;
+    font-size: 28px;
+    letter-spacing: 0.18em;
+    color: #fff;
+    line-height: 1;
+  }
+  .brand-tag {
+    font-family: "Share Tech Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    color: var(--cyan-dim);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  h1 {
+    font-family: "Teko", sans-serif;
+    font-weight: 500;
+    font-size: 52px;
+    letter-spacing: 0.03em;
+    margin: 0 0 16px;
+    color: #fff;
+    line-height: 1.05;
+  }
+  .lead {
+    font-size: 15px;
+    color: var(--text-dim);
+    max-width: 640px;
+    text-wrap: pretty;
+    margin: 0 0 56px;
+  }
+
+  h2 {
+    font-family: "Share Tech Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin: 56px 0 14px;
+    padding-left: 12px;
+    border-left: 2px solid var(--cyan);
+  }
+
+  h3 {
+    font-family: "Teko", sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: #fff;
+    margin: 28px 0 8px;
+  }
+
+  p { margin: 0 0 14px; color: var(--text-dim); font-size: 14px; }
+  strong { color: #fff; font-weight: 500; }
+  code {
+    font-family: "Share Tech Mono", monospace;
+    font-size: 12px;
+    background: rgba(127,245,255,0.08);
+    border: 1px solid var(--rule);
+    padding: 1px 6px;
+    color: var(--cyan);
+    border-radius: 2px;
+  }
+
+  ul { margin: 0 0 14px; padding-left: 20px; }
+  li { margin-bottom: 6px; color: var(--text-dim); font-size: 14px; }
+  li::marker { color: var(--cyan-dim); }
+
+  /* Swatch row */
+  .swatch-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin: 20px 0 8px;
+  }
+  .sw {
+    border: 1px solid var(--rule);
+    padding: 14px 12px;
+    background: var(--bg-panel);
+  }
+  .sw-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .sw-name {
+    font-family: "Share Tech Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .sw-hex {
+    font-family: "Share Tech Mono", monospace;
+    font-size: 11px;
+    color: var(--cyan);
+  }
+
+  /* Spec grid */
+  .spec {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 4px 20px;
+    margin: 12px 0 20px;
+    padding: 16px 18px;
+    background: var(--bg-panel);
+    border-left: 2px solid var(--rule);
+    font-size: 13px;
+  }
+  .spec dt {
+    font-family: "Share Tech Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--cyan-dim);
+    text-transform: uppercase;
+    padding-top: 2px;
+  }
+  .spec dd { margin: 0; color: var(--text-dim); }
+
+  .divider {
+    border: 0;
+    height: 1px;
+    background: var(--rule);
+    margin: 72px 0 0;
+  }
+  .footer {
+    padding-top: 24px;
+    font-family: "Share Tech Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+  .footer a { color: var(--cyan-dim); text-decoration: none; }
+  .footer a:hover { color: var(--cyan); }
+
+  @media (max-width: 640px) {
+    .doc { padding: 48px 24px 80px; }
+    h1 { font-size: 38px; }
+    .swatch-row { grid-template-columns: repeat(2, 1fr); }
+    .spec { grid-template-columns: 1fr; }
+    .spec dt { padding-top: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="doc">
+
+  <div class="brand">
+    <div class="brand-mark">◇</div>
+    <div>
+      <div class="brand-name">SERAPH FIELD</div>
+      <div class="brand-tag">Design Notes · v0.2</div>
+    </div>
+  </div>
+
+  <h1>Design Notes</h1>
+  <p class="lead">
+    Seraph Field는 수학 지식을 노드-엣지 그래프로 탐색하는 인터페이스다.
+    이름은 헤븐 번즈 레드의 Seraph, 필드는 QFT(Quantum Field Theory)에서 따왔다.
+    시각 언어는 Psycho-Pass의 시빌라시스템·도미네이터 HUD를 참조하되,
+    다크 시안 배경에 녹아드는 tonal 처리를 원칙으로 한다.
+  </p>
+
+  <h2>Palette</h2>
+  <p>전체 팔레트는 cyan-family 내 hue shift로 구성된다. 채도는 낮추고 명도 차이로 카테고리를 구분한다 — 배경 다크 시안에서 튀지 않으면서 읽힌다.</p>
+
+  <div class="swatch-row">
+    <div class="sw">
+      <div class="sw-dot" style="background:#8ec6ff"></div>
+      <div class="sw-name">Algebra</div>
+      <div class="sw-hex">#8EC6FF</div>
+    </div>
+    <div class="sw">
+      <div class="sw-dot" style="background:#8fe8c6"></div>
+      <div class="sw-name">Analysis</div>
+      <div class="sw-hex">#8FE8C6</div>
+    </div>
+    <div class="sw">
+      <div class="sw-dot" style="background:#f0b788"></div>
+      <div class="sw-name">Geometry</div>
+      <div class="sw-hex">#F0B788</div>
+    </div>
+    <div class="sw">
+      <div class="sw-dot" style="background:#e8dc9a"></div>
+      <div class="sw-name">Linalg</div>
+      <div class="sw-hex">#E8DC9A</div>
+    </div>
+    <div class="sw">
+      <div class="sw-dot" style="background:#9ef0f0"></div>
+      <div class="sw-name">Other</div>
+      <div class="sw-hex">#9EF0F0</div>
+    </div>
+  </div>
+
+  <h2>Node</h2>
+  <p>
+    노드는 <strong>어둡고 반투명한 구체</strong>다. 배경이 비쳐 보이고,
+    외곽에는 카테고리 색의 얇은 atmospheric rim glow가 감돈다 — 우주에서 본 행성의 대기층.
+    내부에 심볼·tick·하이라이트를 넣지 않는다.
+  </p>
+  <dl class="spec">
+    <dt>Fill</dt>            <dd><code>#0A1E26</code> @ 35% — 배경 톤과 한 계열</dd>
+    <dt>Border</dt>          <dd>1.2px · 카테고리 hue · 75% opacity</dd>
+    <dt>Atmospheric limb</dt><dd>경계 ~88% 지점부터 카테고리 색 fade-in</dd>
+    <dt>Definition</dt>      <dd>30px · 기본</dd>
+    <dt>Instance</dt>        <dd>18px · 얇은 border · 서브오디네이트</dd>
+    <dt>Selected</dt>        <dd>흰 border 2.2px + 넓은 halo (14px underlay)</dd>
+    <dt>Label</dt>           <dd>Share Tech Mono 10px · <code>#BFE0E4</code> · outline 없음</dd>
+  </dl>
+
+  <h2>Edge</h2>
+  <p>엣지는 구조만 전달한다 — 장식성 최소화. 카테고리 색을 쓰되 기본 opacity 42%로 절제한다.</p>
+  <dl class="spec">
+    <dt>Default</dt>    <dd>1.1px · opacity 0.42 · unbundled-bezier</dd>
+    <dt>Highlighted</dt><dd>3.6px · opacity 1 · arrow scale 1.2×</dd>
+    <dt>Parallel</dt>   <dd>dashed <code>[6,4]</code> pattern</dd>
+    <dt>Dimmed</dt>     <dd>opacity 0.08 — 포커스 외 페이드</dd>
+  </dl>
+
+  <h2>Spatial Depth</h2>
+  <p>
+    깊이감은 <strong>배경 레이어링</strong>으로 만든다.
+    그래프는 이 공간 안에 떠 있는 레이어로 읽힌다.
+  </p>
+  <ul>
+    <li><strong>Floor grid</strong> — 2D 평면 격자 (80px), 중앙에서 가장자리로 페이드아웃</li>
+    <li><strong>Atmosphere</strong> — 좌우 vignette pool + 상단 fog + 하단 암흑</li>
+    <li><strong>Ambient particles</strong> — 천천히 drift하는 quantum 입자 + 주기적 pulse ring</li>
+  </ul>
+
+  <h2>HUD Frame</h2>
+  <ul>
+    <li>뷰포트 4코너에 시안 L자 브래킷 (22px) + drop-shadow 글로우</li>
+  </ul>
+
+  <h2>Sidebar</h2>
+  <p>
+    사이드바는 <strong>모바일 디바이스 셸</strong> 형태다.
+    우측 엣지에 베젤 그라디언트·전원 버튼·스피커 슬릿,
+    내부는 프로스티드 글래스 화면 (14px 라운드 코너).
+  </p>
+  <ul>
+    <li>탭: <code>FILTER</code> · <code>SEARCH</code> · <code>STATS</code></li>
+    <li>Edge type 셀은 코너-컷 inventory 그리드 스타일</li>
+    <li>900px 이하에서 drawer로 전환</li>
+  </ul>
+
+  <h2>Typography</h2>
+  <dl class="spec">
+    <dt>Display</dt>  <dd>Teko — 로고·H1·노드 강조</dd>
+    <dt>Mono</dt>     <dd>Share Tech Mono — 라벨·캡션·HUD 텍스트</dd>
+    <dt>Body</dt>     <dd>Noto Sans KR — 설명문·도움말</dd>
+  </dl>
+
+  <h2>Interaction</h2>
+  <ul>
+    <li>드래그·줌·필터·검색 — Cytoscape + fcose 레이아웃</li>
+    <li>노드 클릭 → HUD 팝업 다이얼로그 (4코너 프레임, 카테고리 뱃지, 액션 버튼)</li>
+    <li>Ambient drift — 노드 위치에 slow noise 오프셋 적용 (토글 가능)</li>
+    <li>100개 미만 최적화, 500+ 까지 성능 유지되는 구조</li>
+  </ul>
+
+  <h2>Tweaks</h2>
+  <p>우측 상단 <code>⚙ TWEAKS</code> 패널에서 다음을 교체 가능:</p>
+  <ul>
+    <li>카테고리 팔레트 프리셋 — <code>sibyl</code> · <code>starrail</code> · <code>reverse1999</code> · <code>arknights</code> · <code>cyan-aurora</code></li>
+    <li><code>drift</code> · <code>bgFx</code> · <code>scanlines</code> 토글</li>
+  </ul>
+
+  <hr class="divider">
+  <div class="footer">
+    SERAPH FIELD · WFS × KEY MOTIF
+  </div>
+</div>
+
+</body>
+</html>
