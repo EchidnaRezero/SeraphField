@@ -1,0 +1,56 @@
+{
+  "Group": [
+    {
+      "path": "THEORY/group-intro-kg-sample.md",
+      "title": "군론 입문 (KG 샘플)",
+      "date": "2026-04-17"
+    }
+  ],
+  "Monoid": [
+    {
+      "path": "THEORY/group-intro-kg-sample.md",
+      "title": "군론 입문 (KG 샘플)",
+      "date": "2026-04-17"
+    }
+  ],
+  "strengthen": [
+    {
+      "path": "THEORY/group-intro-kg-sample.md",
+      "title": "군론 입문 (KG 샘플)",
+      "date": "2026-04-17"
+    },
+    {
+      "path": "THEORY/hilbert-space-kg-sample.md",
+      "title": "힐베르트 공간 입문 (KG 샘플)",
+      "date": "2026-04-17"
+    }
+  ],
+  "functor:free": [
+    {
+      "path": "THEORY/group-intro-kg-sample.md",
+      "title": "군론 입문 (KG 샘플)",
+      "date": "2026-04-17"
+    }
+  ],
+  "HilbertSpace": [
+    {
+      "path": "THEORY/hilbert-space-kg-sample.md",
+      "title": "힐베르트 공간 입문 (KG 샘플)",
+      "date": "2026-04-17"
+    }
+  ],
+  "BanachSpace": [
+    {
+      "path": "THEORY/hilbert-space-kg-sample.md",
+      "title": "힐베르트 공간 입문 (KG 샘플)",
+      "date": "2026-04-17"
+    }
+  ],
+  "InnerProdSpace": [
+    {
+      "path": "THEORY/hilbert-space-kg-sample.md",
+      "title": "힐베르트 공간 입문 (KG 샘플)",
+      "date": "2026-04-17"
+    }
+  ]
+}

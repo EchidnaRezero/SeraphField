@@ -1,7 +1,8 @@
 node_modules/
 build/
 dist/
-src/generated/*.json
+src/generated/posts.json
+src/generated/search-index.json
 coverage/
 test-results/
 .devserver.log*

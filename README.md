@@ -12,6 +12,8 @@
   - `SCRATCH/` -> Git으로 추적하지 않는 private 초안
   - `DRAFT/` -> Git으로 추적하는 작업중 원본
   - `RAW/` -> 사이트에 게시하는 최종 공개 원본
+- `KNOWLEDGE_GRAPH/`
+  - SQLite 기반 수학 지식 그래프 데이터 관리 (seed, export)
 - `seraph-field-site/`
   - React + Vite 기반 정적 사이트
 - `scripts/`
@@ -28,6 +30,7 @@
 - Runtime/Tooling: `Node.js 24`
 - Frontend: `React 19`, `TypeScript`, `Vite 8`
 - Styling/UI: `Tailwind CSS 4`, `Motion`, `Lucide React`
+- Knowledge Graph: `Cytoscape.js`, `cytoscape-fcose`, `better-sqlite3`
 - Content: `gray-matter`, `react-markdown`, `remark-math`, `rehype-katex`, `react-syntax-highlighter`
 - Testing: `Vitest`
 - Deploy: `GitHub Pages`, `GitHub Actions`
