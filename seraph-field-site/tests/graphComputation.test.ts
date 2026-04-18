@@ -29,15 +29,15 @@ describe('computeNeighbors', () => {
 
 describe('computeVisibleEdges', () => {
   it('returns all with no filter restriction', () => {
-    const result = computeVisibleEdges(edges, { edgeTypes: new Set(['strengthen','instance','dual']), nodeTypes: new Set(['definition','instance']) }, nodes);
+    const result = computeVisibleEdges(edges, { edgeTypes: new Set(['strengthen','instance','dual']), nodeTypes: new Set(['definition','instance']), activeTags: new Set() }, nodes);
     expect(result).toHaveLength(3);
   });
   it('filters by edge type', () => {
-    const result = computeVisibleEdges(edges, { edgeTypes: new Set(['strengthen']), nodeTypes: new Set(['definition','instance']) }, nodes);
+    const result = computeVisibleEdges(edges, { edgeTypes: new Set(['strengthen']), nodeTypes: new Set(['definition','instance']), activeTags: new Set() }, nodes);
     expect(result).toHaveLength(1);
   });
   it('filters by node type', () => {
-    const result = computeVisibleEdges(edges, { edgeTypes: new Set(['strengthen','instance','dual']), nodeTypes: new Set(['definition']) }, nodes);
+    const result = computeVisibleEdges(edges, { edgeTypes: new Set(['strengthen','instance','dual']), nodeTypes: new Set(['definition']), activeTags: new Set() }, nodes);
     expect(result).toHaveLength(1);
   });
 });

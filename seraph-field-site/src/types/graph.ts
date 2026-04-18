@@ -42,3 +42,19 @@ export interface KgDocEntry {
 }
 
 export type KgDocsIndex = Record<string, KgDocEntry[]>;
+
+export interface CategoryPalette {
+  algebra: string;
+  analysis: string;
+  geometry: string;
+  linalg: string;
+  other: string;
+  [key: string]: string;
+}
+
+export interface GraphTweaks {
+  palette: string;
+  drift: boolean;
+  bgFx: boolean;
+  scanlines: boolean;
+}

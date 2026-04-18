@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react';
 import type { GraphData } from '../../types/graph';
 import type { GraphFilters } from '../../features/graph/graphComputation';
 
@@ -7,8 +8,7 @@ export interface GraphSidebarProps {
   onFiltersChange: (filters: GraphFilters) => void;
   hideIsolated: boolean;
   onHideIsolatedChange: (v: boolean) => void;
-  showReverse: boolean;
-  onShowReverseChange: (v: boolean) => void;
+  onSelectNode: (nodeId: string) => void;
 }
 
 function toggleSet<T>(set: Set<T>, item: T): Set<T> {
@@ -18,104 +18,225 @@ function toggleSet<T>(set: Set<T>, item: T): Set<T> {
   return next;
 }
 
+type TabId = 'filter' | 'search' | 'stats';
+
 export function GraphSidebar({
   graphData,
   filters,
   onFiltersChange,
   hideIsolated,
   onHideIsolatedChange,
-  showReverse,
-  onShowReverseChange,
+  onSelectNode,
 }: GraphSidebarProps) {
-  const nodeTypes = ['definition', 'instance'] as const;
+  const [activeTab, setActiveTab] = useState<TabId>('filter');
+  const [query, setQuery] = useState('');
+
+  const usedTags = useMemo(() => {
+    const tags = new Set<string>();
+    for (const e of graphData.edges) {
+      for (const t of e.tags) tags.add(t);
+    }
+    return [...tags].sort();
+  }, [graphData.edges]);
+
+  const searchResults = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    return graphData.nodes
+      .filter(n => n.label.toLowerCase().includes(q) || n.id.toLowerCase().includes(q))
+      .slice(0, 10);
+  }, [query, graphData.nodes]);
+
+  const stats = useMemo(() => {
+    const byCat: Record<string, number> = {};
+    for (const n of graphData.nodes) byCat[n.category] = (byCat[n.category] || 0) + 1;
+    return { nodes: graphData.nodes.length, edges: graphData.edges.length, byCat };
+  }, [graphData]);
 
   return (
-    <aside className="w-[280px] shrink-0 h-full overflow-y-auto border-r border-neon-cyan/20 px-4 py-5 font-mono text-[0.78rem]"
-      style={{ background: '#12122a' }}>
+    <aside className="kg-sidebar">
+      <div className="kg-side-header">
+        <div className="kg-chev">◆</div>
+        <div>
+          <div className="kg-side-title">KNOWLEDGE_GRAPH</div>
+          <div className="kg-side-sub">// {stats.nodes} nodes · {stats.edges} edges</div>
+        </div>
+      </div>
 
-      {/* Node Types */}
-      <section className="mb-5">
-        <h3 className="text-neon-cyan/70 text-[0.65rem] uppercase tracking-[0.2em] mb-2">
-          Node Types
-        </h3>
-        {nodeTypes.map(nt => (
-          <label key={nt} className="flex items-center gap-2 mb-1.5 cursor-pointer text-text-main/80 hover:text-text-main">
-            <input
-              type="checkbox"
-              checked={filters.nodeTypes.has(nt)}
-              onChange={() => onFiltersChange({ ...filters, nodeTypes: toggleSet(filters.nodeTypes, nt) })}
-              className="accent-neon-cyan"
-            />
-            <span className="capitalize">{nt}</span>
-          </label>
+      <div className="kg-tabs">
+        {([['filter', 'FILTER'], ['search', 'SEARCH'], ['stats', 'STATS']] as const).map(([id, label]) => (
+          <button
+            key={id}
+            onClick={() => setActiveTab(id)}
+            className={`kg-tab ${activeTab === id ? 'is-active' : ''}`}
+          >
+            {label}
+          </button>
         ))}
-      </section>
+      </div>
 
-      {/* Edge Types */}
-      <section className="mb-5">
-        <h3 className="text-neon-cyan/70 text-[0.65rem] uppercase tracking-[0.2em] mb-2">
-          Edge Types
-        </h3>
-        {Object.entries(graphData.edgeTypes).map(([key, et]) => (
-          <label key={key} className="flex items-center gap-2 mb-1.5 cursor-pointer text-text-main/80 hover:text-text-main">
-            <input
-              type="checkbox"
-              checked={filters.edgeTypes.has(key)}
-              onChange={() => onFiltersChange({ ...filters, edgeTypes: toggleSet(filters.edgeTypes, key) })}
-              className="accent-neon-cyan"
-            />
-            <span
-              className="inline-block w-3 h-3 rounded-sm shrink-0"
-              style={{ background: et.color }}
-            />
-            <span>{et.label}</span>
-          </label>
-        ))}
-      </section>
-
-      {/* Tag Groups */}
-      {Object.keys(graphData.tagGroups).length > 0 && (
-        <section className="mb-5">
-          <h3 className="text-neon-cyan/70 text-[0.65rem] uppercase tracking-[0.2em] mb-2">
-            Tags
-          </h3>
-          {Object.entries(graphData.tagGroups).map(([key, tg]) => (
-            <label key={key} className="flex items-center gap-2 mb-1.5 cursor-pointer text-text-main/80 hover:text-text-main">
-              <input type="checkbox" className="accent-neon-cyan" />
-              <span
-                className="inline-block w-3 h-3 rounded-sm shrink-0"
-                style={{ background: tg.color }}
+      <div className="kg-side-body">
+        {activeTab === 'search' && (
+          <div>
+            <div className="kg-field-label">FIND_TOPIC</div>
+            <div className="kg-search-wrap">
+              <input
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                placeholder="node label or id..."
+                className="kg-input"
+                autoFocus
               />
-              <span>{tg.label}</span>
-            </label>
-          ))}
-        </section>
-      )}
+              <span className="kg-search-glyph">▸</span>
+            </div>
+            {searchResults.length > 0 && (
+              <div className="kg-search-list">
+                {searchResults.map(n => (
+                  <button
+                    key={n.id}
+                    onClick={() => { onSelectNode(n.id); setQuery(''); }}
+                    className="kg-search-item"
+                  >
+                    <span className="kg-search-dot" data-cat={n.category} />
+                    <span className="kg-search-label">{n.label}</span>
+                    <span className="kg-search-type">{n.type === 'definition' ? 'DEF' : 'INS'}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            {query && searchResults.length === 0 && (
+              <div className="kg-empty">// no match</div>
+            )}
+          </div>
+        )}
 
-      {/* Display Options */}
-      <section>
-        <h3 className="text-neon-cyan/70 text-[0.65rem] uppercase tracking-[0.2em] mb-2">
-          Display
-        </h3>
-        <label className="flex items-center gap-2 mb-1.5 cursor-pointer text-text-main/80 hover:text-text-main">
-          <input
-            type="checkbox"
-            checked={hideIsolated}
-            onChange={e => onHideIsolatedChange(e.target.checked)}
-            className="accent-neon-cyan"
-          />
-          <span>Hide isolated nodes</span>
-        </label>
-        <label className="flex items-center gap-2 mb-1.5 cursor-pointer text-text-main/80 hover:text-text-main">
-          <input
-            type="checkbox"
-            checked={showReverse}
-            onChange={e => onShowReverseChange(e.target.checked)}
-            className="accent-neon-cyan"
-          />
-          <span>Show reverse direction</span>
-        </label>
-      </section>
+        {activeTab === 'filter' && (
+          <>
+            <section className="kg-section">
+              <div className="kg-sec-head">
+                <span className="kg-sec-bar" />
+                <span className="kg-sec-title">NODE_TYPE</span>
+              </div>
+              <div className="kg-seg">
+                {(['definition', 'instance'] as const).map(nt => {
+                  const on = filters.nodeTypes.has(nt);
+                  return (
+                    <button
+                      key={nt}
+                      className={`kg-seg-btn ${on ? 'is-on' : ''}`}
+                      onClick={() => onFiltersChange({ ...filters, nodeTypes: toggleSet(filters.nodeTypes, nt) })}
+                    >
+                      <span className="kg-seg-dot" />
+                      {nt === 'definition' ? 'DEF' : 'INS'}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            <section className="kg-section">
+              <div className="kg-sec-head">
+                <span className="kg-sec-bar" />
+                <span className="kg-sec-title">EDGE_TYPE</span>
+                <span className="kg-sec-count">{filters.edgeTypes.size}/{Object.keys(graphData.edgeTypes).length}</span>
+              </div>
+              <div className="kg-grid">
+                {Object.entries(graphData.edgeTypes).map(([key, et]) => {
+                  const on = filters.edgeTypes.has(key);
+                  return (
+                    <button
+                      key={key}
+                      className={`kg-cell ${on ? 'is-on' : 'is-off'}`}
+                      onClick={() => onFiltersChange({ ...filters, edgeTypes: toggleSet(filters.edgeTypes, key) })}
+                      title={et.label}
+                    >
+                      <span className="kg-cell-glow" style={{ background: et.color }} />
+                      <span className="kg-cell-label">{et.label}</span>
+                      {on && <span className="kg-cell-tick">✓</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            {Object.keys(graphData.tagGroups).length > 0 && (
+              <section className="kg-section">
+                <div className="kg-sec-head">
+                  <span className="kg-sec-bar" />
+                  <span className="kg-sec-title">TAG</span>
+                </div>
+                {Object.entries(graphData.tagGroups).map(([gid, tg]) => {
+                  const groupTags = usedTags.filter(t => t.startsWith(gid + ':'));
+                  if (groupTags.length === 0) return null;
+                  return (
+                    <div key={gid} className="kg-taggroup">
+                      <div className="kg-taggroup-head" style={{ color: tg.color }}>
+                        <span className="kg-tg-square" style={{ background: tg.color }} />
+                        {tg.label}
+                      </div>
+                      <div className="kg-chiplist">
+                        {groupTags.map(tag => {
+                          const on = filters.activeTags.has(tag);
+                          const name = tag.split(':')[1];
+                          return (
+                            <button
+                              key={tag}
+                              className={`kg-chip ${on ? 'is-on' : ''}`}
+                              onClick={() => onFiltersChange({ ...filters, activeTags: toggleSet(filters.activeTags, tag) })}
+                            >
+                              {name}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </section>
+            )}
+
+            <section className="kg-section">
+              <div className="kg-sec-head">
+                <span className="kg-sec-bar" />
+                <span className="kg-sec-title">DISPLAY</span>
+              </div>
+              <label className="kg-sw">
+                <input
+                  type="checkbox"
+                  checked={hideIsolated}
+                  onChange={e => onHideIsolatedChange(e.target.checked)}
+                />
+                <span className="kg-sw-box"><span className="kg-sw-dot" /></span>
+                <span>HIDE_ISOLATED</span>
+              </label>
+            </section>
+          </>
+        )}
+
+        {activeTab === 'stats' && (
+          <div>
+            <div className="kg-stat-big">
+              <div className="kg-stat-num">{stats.nodes}</div>
+              <div className="kg-stat-lbl">total_nodes</div>
+            </div>
+            <div className="kg-stat-big">
+              <div className="kg-stat-num">{stats.edges}</div>
+              <div className="kg-stat-lbl">total_edges</div>
+            </div>
+            <div className="kg-sec-head" style={{ marginTop: 18 }}>
+              <span className="kg-sec-bar" />
+              <span className="kg-sec-title">BY_CATEGORY</span>
+            </div>
+            {Object.entries(stats.byCat).map(([cat, n]) => (
+              <div key={cat} className="kg-stat-row">
+                <span className="kg-search-dot" data-cat={cat} />
+                <span className="kg-stat-catname">{cat}</span>
+                <span className="kg-stat-catnum">{n}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </aside>
   );
 }

@@ -58,11 +58,12 @@ CREATE TABLE edge_tags (
 const insertEdgeType = db.prepare(
   'INSERT INTO edge_types (id, label, color, dash) VALUES (?, ?, ?, ?)'
 );
-insertEdgeType.run('strengthen',  '강화',       '#66cc66', null);
-insertEdgeType.run('instance',    '인스턴스화', '#ffaa00', null);
-insertEdgeType.run('isomorphism', '동형',       '#66ff66', '2,6');
-insertEdgeType.run('dual',        '듀얼',       '#cc66ff', '6,3');
-insertEdgeType.run('other',       '기타',       '#888888', null);
+insertEdgeType.run('strengthen',     '강화',       '#ffcf4a', null);
+insertEdgeType.run('instance',       '인스턴스',   '#7ff5ff', null);
+insertEdgeType.run('dual',           '쌍대',       '#ff7a1a', null);
+insertEdgeType.run('isomorphism',    '동형',       '#ff2a6e', null);
+insertEdgeType.run('application',    '응용',       '#19d6be', null);
+insertEdgeType.run('generalization', '일반화',     '#a8f0f5', null);
 
 // ── Tag groups ──
 const insertTagGroup = db.prepare(
@@ -108,12 +109,13 @@ const nodes = [
   { id: "LieGroup",       label: "리 군",            type: "definition", category: "geometry", desc: "매끄러운 다양체이면서 군인 구조." },
   { id: "DiffManifold",   label: "미분다양체",       type: "definition", category: "geometry", desc: "국소적으로 유클리드 공간과 미분동형인 위상공간." },
   { id: "LieAlgebra",     label: "리 대수",          type: "definition", category: "algebra",  desc: "리 괄호가 정의된 벡터공간. 야코비 항등식 만족." },
-  { id: "DualSpace",      label: "쌍대공간",         type: "definition", category: "linalg",   desc: "V*=Hom(V,k). 선형범함수 전체." },
+  { id: "DualSpace",      label: "선형범함수 공간 V*", type: "definition", category: "linalg",   desc: "V*=Hom(V,k). 벡터공간의 대수적 쌍대." },
   { id: "Z",      label: "ℤ",         type: "instance", category: "algebra",  desc: "정수 전체. (ℤ,+) 아벨군, (ℤ,+,×) 가환환." },
   { id: "Q",      label: "ℚ",         type: "instance", category: "algebra",  desc: "유리수체." },
   { id: "R",      label: "ℝ",         type: "instance", category: "algebra",  desc: "실수체. 완비 순서체." },
   { id: "C",      label: "ℂ",         type: "instance", category: "algebra",  desc: "복소수체. 대수적으로 닫힌 체." },
   { id: "Rn",     label: "ℝⁿ",       type: "instance", category: "linalg",   desc: "n차원 실수 벡터공간. 표준 내적으로 힐베르트 공간." },
+  { id: "R3",     label: "ℝ³",       type: "instance", category: "linalg",   desc: "3차원 실수 벡터공간. 외적으로 리 대수 구조." },
   { id: "SO3",    label: "SO(3)",     type: "instance", category: "geometry", desc: "3차원 특수직교군. det=1인 3×3 직교행렬." },
   { id: "GL_n",   label: "GL(n,ℝ)",   type: "instance", category: "geometry", desc: "일반선형군. 가역 n×n 실행렬." },
   { id: "S_n",    label: "Sₙ",       type: "instance", category: "algebra",  desc: "n개 원소의 대칭군. n≥3이면 비가환." },
@@ -143,29 +145,29 @@ const edges = [
   { source: "Set", target: "Group", type: "strengthen", tags: ["functor:free"], label: "군 구조 추가", detail: "추가: 이항연산, 항등원, 역원\n\n[functor:free] F: Set→Grp. F(S)=S∪S⁻¹ 위의 기약 단어열\n[functor:forgetful] U: Grp→Set. F⊣U.\n보편 성질: S→U(G)인 모든 함수가 F(S)→G로 유일하게 확장." },
   { source: "Set", target: "AbelianGroup", type: "strengthen", tags: ["functor:free"], label: "아벨군 구조 추가", detail: "추가: 가환 군 구조\n\n[functor:free] F: Set→Ab. F(S)=⊕_S ℤ\n[functor:forgetful] U: Ab→Set. F⊣U." },
   { source: "Set", target: "VectorSpace", type: "strengthen", tags: ["functor:free"], label: "벡터공간 구조 추가", detail: "추가: 체 k 위의 벡터공간 구조\n\n[functor:free] F: Set→Vect_k. F(S)=k^{(S)} (S를 기저로)\n[functor:forgetful] U: Vect_k→Set. F⊣U." },
-  { source: "Monoid", target: "Group", type: "strengthen", tags: [], label: "역원 추가", detail: "추가: 모든 원소의 역원\n\n역방향(군→모노이드): 망각함자 U: Grp→Mon." },
-  { source: "Group", target: "AbelianGroup", type: "strengthen", tags: [], label: "교환조건 추가", detail: "추가: 교환법칙 ab=ba\n\n모든 아벨군은 군이지만 역은 성립하지 않음.\n반례: Sₙ (n≥3)은 비가환군." },
-  { source: "AbelianGroup", target: "Ring", type: "strengthen", tags: [], label: "곱셈 추가", detail: "추가: 곱셈(분배법칙 만족), 곱셈 항등원\n\n역방향: 망각함자 U: Ring→Ab." },
-  { source: "AbelianGroup", target: "Module", type: "strengthen", tags: [], label: "스칼라곱 추가", detail: "추가: 환 R 위의 스칼라 작용\n\n역방향: 망각함자 U: R-Mod→Ab." },
-  { source: "AbelianGroup", target: "VectorSpace", type: "strengthen", tags: [], label: "스칼라곱 추가", detail: "추가: 체 k 위의 스칼라 곱\n\n역방향: 망각함자 U: Vect_k→Ab." },
-  { source: "Ring", target: "Field", type: "strengthen", tags: [], label: "가환 + 역원조건 추가", detail: "추가: 곱셈 교환법칙 + 0이 아닌 원소의 곱셈 역원\n\nRing → CRing → Field.\n반례: ℤ는 가환환이지만 체가 아님 (2의 곱셈 역원 없음)." },
-  { source: "Module", target: "VectorSpace", type: "strengthen", tags: [], label: "스칼라를 체로 제한", detail: "추가 조건: 스칼라 환이 체일 것\n\nVect_k는 k-Mod의 특수한 경우.\n반례: ℤ/2ℤ는 ℤ-가군이지만 벡터공간이 아님." },
-  { source: "VectorSpace", target: "Algebra_str", type: "strengthen", tags: [], label: "곱셈 추가", detail: "추가: 결합적 곱셈 (환 구조)\n\n역방향: 망각함자 U: k-Alg→Vect_k.\n수반: 텐서 대수 T(V)=⊕V^{⊗n}. F⊣U." },
-  { source: "Ring", target: "Algebra_str", type: "strengthen", tags: [], label: "스칼라곱 추가", detail: "추가: 체 위의 벡터공간 구조\n\n역방향: 망각함자 U: k-Alg→Ring." },
-  { source: "VectorSpace", target: "LieAlgebra", type: "strengthen", tags: [], label: "리 괄호 추가", detail: "추가: 리 괄호 [−,−] (반대칭, 야코비 항등식)\n\n역방향: 망각함자 U: LieAlg→Vect.\n수반: 자유 리 대수. F⊣U." },
-  { source: "VectorSpace", target: "NormedSpace", type: "strengthen", tags: [], label: "노름 추가", detail: "추가: 노름 ‖−‖\n\n역방향: 망각함자 U: Norm→Vect." },
-  { source: "VectorSpace", target: "InnerProdSpace", type: "strengthen", tags: [], label: "내적 추가", detail: "추가: 내적 ⟨−,−⟩\n내적이 노름을 유도: ‖x‖=√⟨x,x⟩." },
-  { source: "NormedSpace", target: "InnerProdSpace", type: "strengthen", tags: [], label: "내적 추가 (노름 호환)", detail: "추가: 노름을 유도하는 내적\n조건: 평행사변형 법칙 ‖x+y‖²+‖x−y‖²=2(‖x‖²+‖y‖²).\n\n모든 내적공간은 노름공간이지만 역은 아님.\n반례: C([0,1])의 sup 노름은 내적에서 유도되지 않음." },
-  { source: "NormedSpace", target: "BanachSpace", type: "strengthen", tags: [], label: "완비조건 추가", detail: "추가 조건: 모든 코시 수열이 수렴 (완비)\n\n완비화를 통해 노름공간 → 바나흐 공간 구성 가능.\n반례: (C([0,1]), ‖·‖₁)은 완비가 아님." },
-  { source: "InnerProdSpace", target: "HilbertSpace", type: "strengthen", tags: [], label: "완비조건 추가", detail: "추가 조건: 모든 코시 수열이 수렴 (완비)\n\n완비화를 통해 내적공간 → 힐베르트 공간 구성 가능." },
-  { source: "BanachSpace", target: "HilbertSpace", type: "strengthen", tags: [], label: "내적 추가 (노름 호환)", detail: "추가: 노름을 유도하는 내적\n조건: 평행사변형 법칙.\n\n모든 힐베르트는 바나흐이지만 역은 아님.\n반례: C([0,1])은 바나흐이지만 힐베르트가 아님." },
-  { source: "TopSpace", target: "MetricSpace", type: "strengthen", tags: [], label: "거리 추가", detail: "추가: 거리함수 d (위상과 호환)\n\n역방향: 망각함자 U: Met→Top.\n모든 위상이 거리화 가능하지는 않음." },
-  { source: "MetricSpace", target: "NormedSpace", type: "strengthen", tags: [], label: "벡터구조 추가", detail: "추가: 벡터 덧셈, 스칼라곱 (거리와 호환)\n조건: d(x,y)=‖x−y‖을 만족하는 노름 존재\n\n역방향: 망각함자 U: Norm→Met." },
-  { source: "Group", target: "TopGroup", type: "strengthen", tags: [], label: "위상 추가", detail: "추가: 위상 (군 연산이 연속)\n\n역방향: 망각함자 U: TopGrp→Grp." },
-  { source: "TopSpace", target: "TopGroup", type: "strengthen", tags: [], label: "군 연산 추가", detail: "추가: 연속인 군 연산\n\n역방향: 망각함자 U: TopGrp→Top." },
-  { source: "TopSpace", target: "DiffManifold", type: "strengthen", tags: [], label: "미분구조 추가", detail: "추가: 매끄러운 아틀라스 (미분 호환 좌표계)\n\n역방향: 망각함자 U: DiffMan→Top." },
-  { source: "TopGroup", target: "LieGroup", type: "strengthen", tags: [], label: "미분구조 추가", detail: "추가: 매끄러운 다양체 구조\n\n역방향: 망각함자 U: LieGrp→TopGrp." },
-  { source: "DiffManifold", target: "LieGroup", type: "strengthen", tags: [], label: "군 구조 추가", detail: "추가: 매끄러운 군 연산\n\n역방향: 망각함자 U: LieGrp→DiffMan." },
+  { source: "Monoid", target: "Group", type: "strengthen", tags: ["functor:forgetful"], label: "역원 추가", detail: "추가: 모든 원소의 역원\n\n역방향(군→모노이드): 망각함자 U: Grp→Mon." },
+  { source: "Group", target: "AbelianGroup", type: "strengthen", tags: ["functor:forgetful"], label: "교환조건 추가", detail: "추가: 교환법칙 ab=ba\n\n모든 아벨군은 군이지만 역은 성립하지 않음.\n반례: Sₙ (n≥3)은 비가환군." },
+  { source: "AbelianGroup", target: "Ring", type: "strengthen", tags: ["functor:forgetful"], label: "곱셈 추가", detail: "추가: 곱셈(분배법칙 만족), 곱셈 항등원\n\n역방향: 망각함자 U: Ring→Ab." },
+  { source: "AbelianGroup", target: "Module", type: "strengthen", tags: ["functor:forgetful"], label: "스칼라곱 추가", detail: "추가: 환 R 위의 스칼라 작용\n\n역방향: 망각함자 U: R-Mod→Ab." },
+  { source: "AbelianGroup", target: "VectorSpace", type: "strengthen", tags: ["functor:forgetful"], label: "스칼라곱 추가", detail: "추가: 체 k 위의 스칼라 곱\n\n역방향: 망각함자 U: Vect_k→Ab." },
+  { source: "Ring", target: "Field", type: "strengthen", tags: ["functor:forgetful"], label: "가환 + 역원조건 추가", detail: "추가: 곱셈 교환법칙 + 0이 아닌 원소의 곱셈 역원\n\nRing → CRing → Field.\n반례: ℤ는 가환환이지만 체가 아님 (2의 곱셈 역원 없음)." },
+  { source: "Module", target: "VectorSpace", type: "strengthen", tags: ["functor:forgetful"], label: "스칼라를 체로 제한", detail: "추가 조건: 스칼라 환이 체일 것\n\nVect_k는 k-Mod의 특수한 경우.\n반례: ℤ/2ℤ는 ℤ-가군이지만 벡터공간이 아님." },
+  { source: "VectorSpace", target: "Algebra_str", type: "strengthen", tags: ["functor:forgetful"], label: "곱셈 추가", detail: "추가: 결합적 곱셈 (환 구조)\n\n역방향: 망각함자 U: k-Alg→Vect_k.\n수반: 텐서 대수 T(V)=⊕V^{⊗n}. F⊣U." },
+  { source: "Ring", target: "Algebra_str", type: "strengthen", tags: ["functor:forgetful"], label: "스칼라곱 추가", detail: "추가: 체 위의 벡터공간 구조\n\n역방향: 망각함자 U: k-Alg→Ring." },
+  { source: "VectorSpace", target: "LieAlgebra", type: "strengthen", tags: ["functor:forgetful"], label: "리 괄호 추가", detail: "추가: 리 괄호 [−,−] (반대칭, 야코비 항등식)\n\n역방향: 망각함자 U: LieAlg→Vect.\n수반: 자유 리 대수. F⊣U." },
+  { source: "VectorSpace", target: "NormedSpace", type: "strengthen", tags: ["functor:forgetful"], label: "노름 추가", detail: "추가: 노름 ‖−‖\n\n역방향: 망각함자 U: Norm→Vect." },
+  { source: "VectorSpace", target: "InnerProdSpace", type: "strengthen", tags: ["functor:forgetful"], label: "내적 추가", detail: "추가: 내적 ⟨−,−⟩\n내적이 노름을 유도: ‖x‖=√⟨x,x⟩." },
+  { source: "NormedSpace", target: "InnerProdSpace", type: "strengthen", tags: ["functor:forgetful"], label: "내적 추가 (노름 호환)", detail: "추가: 노름을 유도하는 내적\n조건: 평행사변형 법칙 ‖x+y‖²+‖x−y‖²=2(‖x‖²+‖y‖²).\n\n모든 내적공간은 노름공간이지만 역은 아님.\n반례: C([0,1])의 sup 노름은 내적에서 유도되지 않음." },
+  { source: "NormedSpace", target: "BanachSpace", type: "strengthen", tags: ["functor:forgetful"], label: "완비조건 추가", detail: "추가 조건: 모든 코시 수열이 수렴 (완비)\n\n완비화를 통해 노름공간 → 바나흐 공간 구성 가능.\n반례: (C([0,1]), ‖·‖₁)은 완비가 아님." },
+  { source: "InnerProdSpace", target: "HilbertSpace", type: "strengthen", tags: ["functor:forgetful"], label: "완비조건 추가", detail: "추가 조건: 모든 코시 수열이 수렴 (완비)\n\n완비화를 통해 내적공간 → 힐베르트 공간 구성 가능." },
+  { source: "BanachSpace", target: "HilbertSpace", type: "strengthen", tags: ["functor:forgetful"], label: "내적 추가 (노름 호환)", detail: "추가: 노름을 유도하는 내적\n조건: 평행사변형 법칙.\n\n모든 힐베르트는 바나흐이지만 역은 아님.\n반례: C([0,1])은 바나흐이지만 힐베르트가 아님." },
+  { source: "TopSpace", target: "MetricSpace", type: "strengthen", tags: ["functor:forgetful"], label: "거리 추가", detail: "추가: 거리함수 d (위상과 호환)\n\n역방향: 망각함자 U: Met→Top.\n모든 위상이 거리화 가능하지는 않음." },
+  { source: "MetricSpace", target: "NormedSpace", type: "strengthen", tags: ["functor:forgetful"], label: "벡터구조 추가", detail: "추가: 벡터 덧셈, 스칼라곱 (거리와 호환)\n조건: d(x,y)=‖x−y‖을 만족하는 노름 존재\n\n역방향: 망각함자 U: Norm→Met." },
+  { source: "Group", target: "TopGroup", type: "strengthen", tags: ["functor:forgetful"], label: "위상 추가", detail: "추가: 위상 (군 연산이 연속)\n\n역방향: 망각함자 U: TopGrp→Grp." },
+  { source: "TopSpace", target: "TopGroup", type: "strengthen", tags: ["functor:forgetful"], label: "군 연산 추가", detail: "추가: 연속인 군 연산\n\n역방향: 망각함자 U: TopGrp→Top." },
+  { source: "TopSpace", target: "DiffManifold", type: "strengthen", tags: ["functor:forgetful"], label: "미분구조 추가", detail: "추가: 매끄러운 아틀라스 (미분 호환 좌표계)\n\n역방향: 망각함자 U: DiffMan→Top." },
+  { source: "TopGroup", target: "LieGroup", type: "strengthen", tags: ["functor:forgetful"], label: "미분구조 추가", detail: "추가: 매끄러운 다양체 구조\n\n역방향: 망각함자 U: LieGrp→TopGrp." },
+  { source: "DiffManifold", target: "LieGroup", type: "strengthen", tags: ["functor:forgetful"], label: "군 구조 추가", detail: "추가: 매끄러운 군 연산\n\n역방향: 망각함자 U: LieGrp→DiffMan." },
   // dual
   { source: "VectorSpace", target: "DualSpace", type: "dual", tags: ["functor:dual"], label: "V ↦ V*", detail: "(−)*: Vect_k → Vect_k^op  (반변함자)\nV*=Hom_k(V,k)\n\n유한차원: dim V = dim V*, V ≅ V** (자연 동형)\n무한차원: V ⊊ V** (정칙 매장)" },
   { source: "LieGroup", target: "LieAlgebra", type: "dual", tags: ["functor:lie"], label: "Lie(G)=T_eG", detail: "리 함자 Lie: LieGrp → LieAlg\n항등원 e에서의 접공간 T_eG에 교환자 괄호 부여.\n\n충실: 국소 동형인 리 군 ↔ 같은 리 대수.\nSO(3)과 SU(2)는 다른 리 군이지만 같은 리 대수 (이중 피복)." },
@@ -198,11 +200,12 @@ const edges = [
   { source: "Z", target: "Q", type: "strengthen", tags: [], label: "분수체 구성", detail: "ℤ → ℚ: 정역의 분수체(fraction field) 구성.\nℤ의 0이 아닌 원소로 나눗셈을 허용.\n환 → 체 확장의 표준 예." },
   { source: "Q", target: "R", type: "strengthen", tags: [], label: "완비화", detail: "ℚ → ℝ: 유리수체의 완비화.\n데데킨트 절단 또는 코시 수열의 동치류.\n순서체로서 유일한 완비화." },
   { source: "R", target: "C", type: "strengthen", tags: [], label: "대수적 폐포", detail: "ℝ → ℂ: ℝ[i], i²=−1 첨가.\nℝ 위의 2차 확대체.\n대수적으로 닫힌 체 (대수학의 기본정리)." },
-  { source: "SO3", target: "GL_n", type: "strengthen", tags: [], label: "부분군", detail: "SO(3) ⊂ GL(3,ℝ).\n직교 + det=1 조건.\n닫힌 부분군 → 리 부분군 (카르탕 정리)." },
-  { source: "Poly_R", target: "C01", type: "strengthen", tags: [], label: "조밀 부분공간", detail: "ℝ[x] ⊂ C([0,1]).\n바이어슈트라스 근사 정리: ℝ[x]는 C([0,1])에서 sup 노름으로 조밀.\n완비가 아닌 부분공간." },
-  { source: "C01", target: "L2", type: "strengthen", tags: [], label: "포함 (a.e. 동치류)", detail: "C([0,1]) ↪ L²(0,1).\n연속함수는 제곱적분가능.\n‖f‖₂ ≤ ‖f‖∞ (노름 비교).\n조밀한 부분공간." },
+  { source: "SO3", target: "GL_n", type: "strengthen", tags: ["map:inclusion"], label: "부분군", detail: "SO(3) ⊂ GL(3,ℝ).\n직교 + det=1 조건.\n닫힌 부분군 → 리 부분군 (카르탕 정리)." },
+  { source: "Poly_R", target: "C01", type: "strengthen", tags: ["map:inclusion"], label: "조밀 부분공간", detail: "ℝ[x] ⊂ C([0,1]).\n바이어슈트라스 근사 정리: ℝ[x]는 C([0,1])에서 sup 노름으로 조밀.\n완비가 아닌 부분공간." },
+  { source: "C01", target: "L2", type: "strengthen", tags: ["map:inclusion"], label: "포함 (a.e. 동치류)", detail: "C([0,1]) ↪ L²(0,1).\n연속함수는 제곱적분가능.\n‖f‖₂ ≤ ‖f‖∞ (노름 비교).\n조밀한 부분공간." },
   // object-object isomorphism
-  { source: "so3", target: "Rn", type: "isomorphism", tags: [], label: "𝔰𝔬(3) ≅ (ℝ³,×)", detail: "리 대수 동형.\n반대칭행렬 A ↔ 벡터 ω: Av = ω×v.\n리 괄호 [A,B] ↔ 외적 a×b.\n3차원에서만 성립하는 우연의 동형(accidental isomorphism)." },
+  { source: "so3", target: "R3", type: "isomorphism", tags: [], label: "𝔰𝔬(3) ≅ (ℝ³,×)", detail: "리 대수 동형.\n반대칭행렬 A ↔ 벡터 ω: Av = ω×v.\n리 괄호 [A,B] ↔ 외적 a×b.\n3차원에서만 성립하는 우연의 동형(accidental isomorphism).\ndim 𝔰𝔬(n)=n(n−1)/2=n ⟹ n=3." },
+  { source: "R3", target: "Rn", type: "instance", tags: [], label: "n=3", detail: null },
   { source: "gl_n", target: "Mat_n", type: "isomorphism", tags: [], label: "𝔤𝔩(n) ≅ M(n,ℝ)", detail: "벡터공간으로서 동형.\n𝔤𝔩(n,ℝ)의 underlying 벡터공간 = M(n,ℝ).\n리 괄호 [A,B]=AB−BA가 추가 구조." },
   // object-object dual
   { source: "L2", target: "L2", type: "dual", tags: [], label: "L² ≅ (L²)*", detail: "힐베르트 공간의 자기 쌍대 (리스 표현정리).\nΦ(g)(f) = ∫₀¹ f(t)g(t)dt.\n반선형 등거리 동형." },

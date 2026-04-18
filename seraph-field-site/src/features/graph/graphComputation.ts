@@ -3,6 +3,7 @@ import type { GraphEdge, GraphNode } from '../../types/graph';
 export interface GraphFilters {
   edgeTypes: Set<string>;
   nodeTypes: Set<string>;
+  activeTags: Set<string>;
 }
 
 export function computeNeighbors(nodeId: string, edges: GraphEdge[]): Set<string> {
@@ -26,6 +27,9 @@ export function computeVisibleEdges(
     const tgtType = nodeTypeMap.get(e.target);
     if (srcType && !filters.nodeTypes.has(srcType)) return false;
     if (tgtType && !filters.nodeTypes.has(tgtType)) return false;
+    if (filters.activeTags.size > 0) {
+      if (!e.tags.some(t => filters.activeTags.has(t))) return false;
+    }
     return true;
   });
 }
