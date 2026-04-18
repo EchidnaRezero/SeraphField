@@ -10,7 +10,7 @@ import {
 import { buildGraphStylesheet, CATEGORY_PALETTES } from './graphStyle';
 import { GraphView } from './GraphView';
 import { GraphSidebar } from './GraphSidebar';
-import { GraphMobileControls } from './GraphMobileControls';
+import { GraphMobileControls, type PanelId } from './GraphMobileControls';
 import { GraphPopup, type EdgeInfo } from './GraphPopup';
 import { GraphTweaksPanel } from './GraphTweaksPanel';
 import { GraphBackground } from './GraphBackground';
@@ -46,6 +46,7 @@ export function KnowledgeGraph({ onBack, onOpenPost }: KnowledgeGraphProps) {
   const [popupPosition, setPopupPosition] = useState<{ x: number; y: number } | null>(null);
   const [hideIsolated, setHideIsolated] = useState(false);
   const [tweaksOpen, setTweaksOpen] = useState(false);
+  const [mobilePanel, setMobilePanel] = useState<PanelId>(null);
   const [tweaks, setTweaks] = useState<GraphTweaks>(() => ({
     palette: 'sibyl',
     drift: true,
@@ -169,6 +170,7 @@ export function KnowledgeGraph({ onBack, onOpenPost }: KnowledgeGraphProps) {
       documents={popupDocuments}
       onDocClick={handleDocClick}
       onClose={handleBackgroundClick}
+      isMobile={isMobileLayout}
     />
   ) : null;
 
@@ -187,6 +189,23 @@ export function KnowledgeGraph({ onBack, onOpenPost }: KnowledgeGraphProps) {
               className={`kg-chip-btn ${tweaks.drift ? 'is-on' : ''}`}
               onClick={() => setTweaks({ ...tweaks, drift: !tweaks.drift })}
             >◈ DRIFT</button>
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
+              <button
+                className={`kg-chip-btn ${mobilePanel === 'search' ? 'is-on' : ''}`}
+                onClick={() => setMobilePanel(p => p === 'search' ? null : 'search')}
+                aria-label="검색"
+              >S</button>
+              <button
+                className={`kg-chip-btn ${mobilePanel === 'filter' ? 'is-on' : ''}`}
+                onClick={() => setMobilePanel(p => p === 'filter' ? null : 'filter')}
+                aria-label="필터"
+              >F</button>
+              <button
+                className={`kg-chip-btn ${mobilePanel === 'tweaks' ? 'is-on' : ''}`}
+                onClick={() => setMobilePanel(p => p === 'tweaks' ? null : 'tweaks')}
+                aria-label="설정"
+              >⚙</button>
+            </div>
           </div>
 
           <GraphMobileControls
@@ -198,6 +217,8 @@ export function KnowledgeGraph({ onBack, onOpenPost }: KnowledgeGraphProps) {
             onSelectNode={handleSearchSelect}
             tweaks={tweaks}
             onTweaksChange={setTweaks}
+            openPanel={mobilePanel}
+            onClosePanel={() => setMobilePanel(null)}
           />
 
           {popup}

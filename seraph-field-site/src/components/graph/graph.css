@@ -4,7 +4,7 @@
 .kg-root {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: 100dvh;
   display: flex;
   overflow: hidden;
   background: var(--color-hud-bg);
@@ -608,6 +608,49 @@
   font-size: 10px; color: var(--color-text-dim); letter-spacing: 0.05em; margin-top: 2px;
 }
 
+/* ═════════════ MOBILE POPUP CONTROLS ═════════════ */
+.kg-popup-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: absolute;
+  top: 6px; right: 6px;
+  z-index: 2;
+}
+.kg-popup-toolbar button {
+  background: none;
+  border: 1px solid rgba(25,184,190,0.3);
+  color: rgba(25,184,190,0.7);
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+}
+.kg-popup-toolbar button:active {
+  background: rgba(25,184,190,0.15);
+  color: #fff;
+}
+.kg-popup.is-collapsed {
+  min-width: 180px;
+  max-width: 220px;
+}
+.kg-popup.is-collapsed .kg-popup-desc,
+.kg-popup.is-collapsed .kg-popup-meta,
+.kg-popup.is-collapsed .kg-popup-actions,
+.kg-popup.is-collapsed .kg-popup-edges,
+.kg-popup.is-collapsed .kg-popup-divider {
+  display: none;
+}
+.kg-popup-drag {
+  position: absolute;
+  top: 0; left: 0; right: 40px;
+  height: 32px;
+  cursor: grab;
+  touch-action: none;
+}
+.kg-popup-drag:active { cursor: grabbing; }
+
 /* ═════════════ TWEAKS PANEL ═════════════ */
 .kg-tweaks {
   position: absolute;
@@ -656,5 +699,7 @@
     transition: transform 200ms;
   }
   .kg-sidebar.is-open { transform: none; }
-  .kg-topbar { left: 16px; }
+  .kg-topbar { left: 16px; position: fixed; top: 16px; right: 16px; }
+  .kg-tweaks { position: fixed; }
+  .kg-main::before { display: none; }
 }
