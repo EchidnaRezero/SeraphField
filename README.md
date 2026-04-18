@@ -65,3 +65,43 @@ flowchart LR
     DRAFT -->|"최종 정리 후"| RAW["RAW/"]
     RAW -->|"content build"| SITE["seraph-field-site"]
 ```
+
+## 지식 그래프 파이프라인
+
+수학 개념 간의 관계를 노드-엣지 그래프로 시각화합니다. 데이터는 SQLite에서 관리하고, 빌드 시점에 JSON으로 변환되어 프론트엔드에 번들됩니다.
+
+```mermaid
+flowchart TD
+    SEED["KNOWLEDGE_GRAPH/seed.mjs"]
+    DB["math-kg.db (SQLite)"]
+    EXPORT["KNOWLEDGE_GRAPH/export.mjs"]
+    GRAPH_JSON["src/generated/graph-data.json"]
+    RAW_MD["RAW/**/*.md (kg_tags 프론트매터)"]
+    BUILD_GRAPH["scripts/build-graph.mjs"]
+    KG_DOCS["src/generated/kg-docs.json"]
+    VIEWER["KnowledgeGraph 뷰어"]
+
+    SEED -->|"node seed.mjs"| DB
+    DB -->|"npm run graph:export"| EXPORT
+    EXPORT --> GRAPH_JSON
+    RAW_MD -->|"npm run graph:build"| BUILD_GRAPH
+    BUILD_GRAPH --> KG_DOCS
+    GRAPH_JSON --> VIEWER
+    KG_DOCS --> VIEWER
+```
+
+### 콘텐츠 → 그래프 연결
+
+`RAW/` 문서의 프론트매터에 `kg_tags`를 추가하면 그래프 팝업에서 관련 문서로 연결됩니다.
+
+```yaml
+---
+title: "군론 입문"
+kg_tags: ["Group", "functor:free"]
+---
+```
+
+- `Group` → "군 (Group)" 노드 클릭 시 이 문서가 팝업에 표시
+- `functor:free` → 해당 태그를 가진 엣지 클릭 시에도 표시
+
+자세한 구조와 운영 방법은 `docs/KNOWLEDGE_GRAPH.md`를 참고합니다.
