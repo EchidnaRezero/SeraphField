@@ -1,7 +1,7 @@
 import type { GraphData, CategoryPalette } from '../../types/graph';
+import type { Css } from 'cytoscape';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Stylesheet = any;
+type Stylesheet = { selector: string; style: Css.Node | Css.Edge };
 
 export const CATEGORY_PALETTES: Record<string, CategoryPalette> = {
   sibyl: {

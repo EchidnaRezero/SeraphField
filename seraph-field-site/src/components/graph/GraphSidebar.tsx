@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { GraphData } from '../../types/graph';
 import type { GraphFilters } from '../../features/graph/graphComputation';
+import { toggleSet } from './graphUtils';
 
 export interface GraphSidebarProps {
   graphData: GraphData;
@@ -9,13 +10,6 @@ export interface GraphSidebarProps {
   hideIsolated: boolean;
   onHideIsolatedChange: (v: boolean) => void;
   onSelectNode: (nodeId: string) => void;
-}
-
-function toggleSet<T>(set: Set<T>, item: T): Set<T> {
-  const next = new Set(set);
-  if (next.has(item)) next.delete(item);
-  else next.add(item);
-  return next;
 }
 
 type TabId = 'filter' | 'search' | 'stats';

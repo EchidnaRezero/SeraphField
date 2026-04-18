@@ -1,7 +1,8 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, useMemo } from 'react';
 import cytoscape from 'cytoscape';
 import fcose from 'cytoscape-fcose';
 import type { GraphData, GraphEdge } from '../../types/graph';
+import { computeNeighbors } from '../../features/graph/graphComputation';
 
 let fcoseRegistered = false;
 if (!fcoseRegistered) {
@@ -15,7 +16,6 @@ export interface GraphViewProps {
   selectedNodeId: string | null;
   selectedEdgeId: number | null;
   neighbors: Set<string>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   stylesheet: any[];
   onNodeClick: (nodeId: string, position: { x: number; y: number }) => void;
   onEdgeClick: (edgeId: number, position: { x: number; y: number }) => void;
@@ -38,39 +38,38 @@ function buildFcoseOptions() {
   } as any;
 }
 
-function startDrift(cy: cytoscape.Core, intensity = 0.12): number {
+function startDrift(cy: cytoscape.Core, intensity = 0.12): { stop: () => void } {
   const vels = new Map<string, { vx: number; vy: number }>();
   cy.nodes().forEach(n => {
     const a = Math.random() * Math.PI * 2;
     vels.set(n.id(), { vx: Math.cos(a) * intensity, vy: Math.sin(a) * intensity });
   });
-  const tick = () => {
+  let running = true;
+  let last = performance.now();
+  const tick = (now: number) => {
+    if (!running) return;
+    const dt = Math.min(now - last, 100) / 50;
+    last = now;
     cy.nodes().forEach(n => {
       if (n.grabbed()) return;
       const v = vels.get(n.id());
       if (!v) return;
       const p = n.position();
-      n.position({ x: p.x + v.vx, y: p.y + v.vy });
-      v.vx += (Math.random() - 0.5) * 0.03;
-      v.vy += (Math.random() - 0.5) * 0.03;
+      n.position({ x: p.x + v.vx * dt, y: p.y + v.vy * dt });
+      v.vx += (Math.random() - 0.5) * 0.03 * dt;
+      v.vy += (Math.random() - 0.5) * 0.03 * dt;
       const s = Math.hypot(v.vx, v.vy);
       if (s > intensity) {
         v.vx = (v.vx / s) * intensity;
         v.vy = (v.vy / s) * intensity;
       }
     });
+    requestAnimationFrame(tick);
   };
-  return window.setInterval(tick, 50);
+  requestAnimationFrame(tick);
+  return { stop: () => { running = false; } };
 }
 
-function computeLocalNeighbors(nodeId: string, edges: GraphEdge[]): Set<string> {
-  const s = new Set<string>();
-  for (const e of edges) {
-    if (e.source === nodeId) s.add(e.target);
-    if (e.target === nodeId) s.add(e.source);
-  }
-  return s;
-}
 
 export function GraphView({
   graphData,
@@ -86,7 +85,7 @@ export function GraphView({
 }: GraphViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const cyRef = useRef<cytoscape.Core | null>(null);
-  const driftRef = useRef<number | null>(null);
+  const driftRef = useRef<{ stop: () => void } | null>(null);
   const prevEdgesRef = useRef(visibleEdges);
   const prevNodesRef = useRef(graphData.nodes);
 
@@ -97,30 +96,39 @@ export function GraphView({
   useEffect(() => { onEdgeClickRef.current = onEdgeClick; }, [onEdgeClick]);
   useEffect(() => { onBackgroundClickRef.current = onBackgroundClick; }, [onBackgroundClick]);
 
-  const pairCount = new Map<string, number>();
-  for (const e of visibleEdges) {
-    const key = [e.source, e.target].sort().join('|');
-    pairCount.set(key, (pairCount.get(key) ?? 0) + 1);
-  }
+  const pairCount = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const e of visibleEdges) {
+      const key = [e.source, e.target].sort().join('|');
+      map.set(key, (map.get(key) ?? 0) + 1);
+    }
+    return map;
+  }, [visibleEdges]);
 
-  const nodeElements = graphData.nodes.map(n => ({
-    data: { id: n.id, label: n.label, type: n.type, category: n.category, desc: n.desc },
-  }));
+  const nodeElements = useMemo(() =>
+    graphData.nodes.map(n => ({
+      data: { id: n.id, label: n.label, type: n.type, category: n.category, desc: n.desc },
+    })),
+    [graphData.nodes],
+  );
 
-  const edgeElements = visibleEdges.map(e => {
-    const key = [e.source, e.target].sort().join('|');
-    const isParallel = (pairCount.get(key) ?? 0) > 1;
-    return {
-      data: {
-        id: 'e' + e.id,
-        source: e.source,
-        target: e.target,
-        color: graphData.edgeTypes[e.type]?.color ?? '#555',
-        edgeType: e.type,
-        parallel: isParallel,
-      },
-    };
-  });
+  const edgeElements = useMemo(() =>
+    visibleEdges.map(e => {
+      const key = [e.source, e.target].sort().join('|');
+      const isParallel = (pairCount.get(key) ?? 0) > 1;
+      return {
+        data: {
+          id: 'e' + e.id,
+          source: e.source,
+          target: e.target,
+          color: graphData.edgeTypes[e.type]?.color ?? '#555',
+          edgeType: e.type,
+          parallel: isParallel,
+        },
+      };
+    }),
+    [visibleEdges, pairCount, graphData.edgeTypes],
+  );
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -160,7 +168,7 @@ export function GraphView({
     });
 
     return () => {
-      if (driftRef.current !== null) clearInterval(driftRef.current);
+      if (driftRef.current !== null) driftRef.current.stop();
       cy.destroy();
       cyRef.current = null;
     };
@@ -183,7 +191,7 @@ export function GraphView({
     if (!cy) return;
 
     if (driftRef.current !== null) {
-      clearInterval(driftRef.current);
+      driftRef.current.stop();
       driftRef.current = null;
     }
 
@@ -214,7 +222,7 @@ export function GraphView({
         sn.addClass('selected');
         cy.elements().addClass('dimmed');
         sn.removeClass('dimmed');
-        const localNeighbors = computeLocalNeighbors(selectedNodeId, visibleEdges);
+        const localNeighbors = computeNeighbors(selectedNodeId, visibleEdges);
         localNeighbors.forEach(id => {
           cy.getElementById(id).removeClass('dimmed').addClass('neighbor');
         });
@@ -244,7 +252,7 @@ export function GraphView({
     if (driftOn && !driftRef.current) {
       driftRef.current = startDrift(cy);
     } else if (!driftOn && driftRef.current) {
-      clearInterval(driftRef.current);
+      driftRef.current.stop();
       driftRef.current = null;
     }
   }, [driftOn]);

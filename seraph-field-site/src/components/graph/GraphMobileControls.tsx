@@ -3,6 +3,7 @@ import type { GraphData, GraphTweaks } from '../../types/graph';
 import type { GraphFilters } from '../../features/graph/graphComputation';
 import { CATEGORY_PALETTES } from './graphStyle';
 import type { CategoryPalette } from '../../types/graph';
+import { toggleSet } from './graphUtils';
 
 export interface GraphMobileControlsProps {
   graphData: GraphData;
@@ -16,13 +17,6 @@ export interface GraphMobileControlsProps {
 }
 
 type PanelId = 'search' | 'filter' | 'tweaks' | null;
-
-function toggleSet<T>(set: Set<T>, item: T): Set<T> {
-  const next = new Set(set);
-  if (next.has(item)) next.delete(item);
-  else next.add(item);
-  return next;
-}
 
 export function GraphMobileControls({
   graphData,
@@ -64,7 +58,8 @@ export function GraphMobileControls({
       <button
         onClick={() => toggle('search')}
         className={`kg-chip-btn ${openPanel === 'search' ? 'is-on' : ''}`}
-        style={{ position: 'absolute', bottom: 20, left: 16, zIndex: 30, width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+        style={{ position: 'absolute', bottom: 20, left: 16, zIndex: 30, width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+        aria-label="검색"
       >
         S
       </button>
@@ -73,7 +68,8 @@ export function GraphMobileControls({
       <button
         onClick={() => toggle('filter')}
         className={`kg-chip-btn ${openPanel === 'filter' ? 'is-on' : ''}`}
-        style={{ position: 'absolute', bottom: 20, right: 16, zIndex: 30, width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+        style={{ position: 'absolute', bottom: 20, right: 16, zIndex: 30, width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+        aria-label="필터"
       >
         F
       </button>
@@ -82,7 +78,8 @@ export function GraphMobileControls({
       <button
         onClick={() => toggle('tweaks')}
         className={`kg-chip-btn ${openPanel === 'tweaks' ? 'is-on' : ''}`}
-        style={{ position: 'absolute', top: 60, right: 16, zIndex: 30, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+        style={{ position: 'absolute', top: 60, right: 16, zIndex: 30, width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+        aria-label="설정"
       >
         ⚙
       </button>

@@ -46,12 +46,12 @@ export function KnowledgeGraph({ onBack, onOpenPost }: KnowledgeGraphProps) {
   const [popupPosition, setPopupPosition] = useState<{ x: number; y: number } | null>(null);
   const [hideIsolated, setHideIsolated] = useState(false);
   const [tweaksOpen, setTweaksOpen] = useState(false);
-  const [tweaks, setTweaks] = useState<GraphTweaks>({
+  const [tweaks, setTweaks] = useState<GraphTweaks>(() => ({
     palette: 'sibyl',
     drift: true,
-    bgFx: true,
+    bgFx: typeof window !== 'undefined' ? window.innerWidth >= 1024 : true,
     scanlines: true,
-  });
+  }));
 
   const palette: CategoryPalette = CATEGORY_PALETTES[tweaks.palette] ?? CATEGORY_PALETTES.sibyl;
 

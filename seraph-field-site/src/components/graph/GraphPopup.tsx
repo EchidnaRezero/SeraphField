@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useLayoutEffect, useState } from 'react';
 import type { GraphNode, GraphEdge, EdgeType, KgDocEntry } from '../../types/graph';
 
 export interface EdgeInfo {
@@ -31,6 +31,14 @@ export function GraphPopup({
   useEffect(() => { setBoxPos(position); }, [position]);
 
   useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [onClose]);
+
+  useLayoutEffect(() => {
     if (!ref.current) return;
     const r = ref.current.getBoundingClientRect();
     const parent = ref.current.offsetParent as HTMLElement | null;
@@ -50,7 +58,7 @@ export function GraphPopup({
       className="kg-popup"
       style={{ left: boxPos.x, top: boxPos.y }}
     >
-      <button onClick={onClose} className="kg-popup-x">×</button>
+      <button onClick={onClose} className="kg-popup-x" aria-label="닫기">×</button>
 
       {type === 'node' && nodeData && (
         <>

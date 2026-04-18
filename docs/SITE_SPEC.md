@@ -106,6 +106,24 @@ flowchart TD
     TESTS --> SELECTORS
     TESTS --> ARCHIVE_LIB
     TESTS --> VALIDATE
+
+    subgraph KG["knowledge graph"]
+        KG_ROOT["KnowledgeGraph.tsx"]
+        KG_VIEW["GraphView.tsx"]
+        KG_SIDEBAR["GraphSidebar.tsx"]
+        KG_MOBILE["GraphMobileControls.tsx"]
+        KG_POPUP["GraphPopup.tsx"]
+        KG_COMP["features/graph/graphComputation.ts"]
+        KG_LOAD["features/graph/loadGraph.ts"]
+    end
+
+    APP --> KG_ROOT
+    KG_ROOT --> KG_VIEW
+    KG_ROOT --> KG_SIDEBAR
+    KG_ROOT --> KG_MOBILE
+    KG_ROOT --> KG_POPUP
+    KG_ROOT --> KG_COMP
+    KG_ROOT --> KG_LOAD
 ```
 
 - 화면 전환은 `App.tsx`
@@ -123,6 +141,7 @@ flowchart TD
 - `#archive/<slug>`
 - `#search`
 - `#search/<query>`
+- `#knowledge-graph`
 - `#references`
 - `#profile`
 
@@ -241,3 +260,8 @@ flowchart TD
 - 콘텐츠 빌드 규칙 변경: `scripts/build-content.mjs`
 - 검색 관련 테스트는 `seraph-field-site/tests/search/` 아래에 모읍니다.
 - 테스트 기준 갱신: `seraph-field-site/tests/*.test.ts`, `npm test`
+- Knowledge Graph 필터/연산 변경: `src/features/graph/graphComputation.ts`
+- Knowledge Graph 시각 스타일/팔레트 변경: `src/components/graph/graphStyle.ts`
+- Knowledge Graph 데이터 추가/수정: `KNOWLEDGE_GRAPH/seed.mjs` → `npm run graph:export`
+- Knowledge Graph 테스트: `seraph-field-site/tests/graphComputation.test.ts`
+- Knowledge Graph 전체 사양: `docs/KNOWLEDGE_GRAPH.md`

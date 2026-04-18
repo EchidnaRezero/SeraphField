@@ -25,8 +25,8 @@ export function computeVisibleEdges(
     if (!filters.edgeTypes.has(e.type)) return false;
     const srcType = nodeTypeMap.get(e.source);
     const tgtType = nodeTypeMap.get(e.target);
-    if (srcType && !filters.nodeTypes.has(srcType)) return false;
-    if (tgtType && !filters.nodeTypes.has(tgtType)) return false;
+    if (!srcType || !filters.nodeTypes.has(srcType)) return false;
+    if (!tgtType || !filters.nodeTypes.has(tgtType)) return false;
     if (filters.activeTags.size > 0) {
       if (!e.tags.some(t => filters.activeTags.has(t))) return false;
     }

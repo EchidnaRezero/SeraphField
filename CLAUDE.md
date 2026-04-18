@@ -36,5 +36,11 @@ The site's visual language is **Psycho-Pass Sibyla System / Dominator HUD** — 
 - Frosted glass panels with `backdrop-filter: blur`
 - Sidebar styled as a device shell (bezel gradient, power button, speaker slit)
 
+### Knowledge Graph Data Workflow
+- Data source of truth: `KNOWLEDGE_GRAPH/seed.mjs`
+- Pipeline: `seed.mjs` → `math-kg.db` → `export.mjs` → `graph-data.json`
+- Full specification: `docs/KNOWLEDGE_GRAPH.md`
+- `graph:export` is NOT part of the automatic build chain — run manually after DB changes
+
 ### Reference
 - Design notes: `docs/design-notes.html`
