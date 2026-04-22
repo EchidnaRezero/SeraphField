@@ -79,7 +79,7 @@ $$
 
 처럼 점 하나에서 미분이 안 되는 함수도 많다.
 
-weak derivative는 test function과의 적분 관계로 미분을 정의한다. $u\in L^1_{\mathrm{loc}}(\Omega)$에 대해 함수 $v$가 $u$의 weak derivative라는 것은 모든 $\varphi\in C_c^\infty(\Omega)$에 대해
+weak derivative는 test function과의 적분 관계로 미분을 정의한다. $u\in L^1_{\mathrm{loc}}(\Omega)$에 대해 $v\in L^1_{\mathrm{loc}}(\Omega)$가 $u$의 weak derivative라는 것은 모든 $\varphi\in C_c^\infty(\Omega)$에 대해
 
 $$
 \int_\Omega u\,\partial_i\varphi\,dx

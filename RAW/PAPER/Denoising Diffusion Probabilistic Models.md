@@ -13,7 +13,7 @@ groups:
 series: diffusion-paper-foundations
 series_title: 확산모형 핵심 논문 읽기
 series_order: 1
-summary: DDPM를 discrete-time latent-variable model로 읽으면서 forward chain, reverse posterior approximation, noise prediction training의 구조를 정리한 논문 노트.
+summary: DDPM을 discrete-time latent-variable model로 읽으면서 forward chain, reverse posterior approximation, noise prediction training의 구조를 정리한 논문 노트.
 slug: denoising-diffusion-probabilistic-models
 ---
 

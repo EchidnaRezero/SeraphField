@@ -161,7 +161,7 @@ $$
 
 ## (5) Distribution Sense
 
-distribution은 함수라기보다 test function을 입력받아 숫자를 내는 연산자로 생각하면 된다. 함수 $f$도
+distribution은 함수라기보다 test function을 입력받아 숫자를 내는 연산자로 생각하면 된다. 국소적분가능 함수 $f\in L^1_{\mathrm{loc}}$도
 
 $$
 T_f(\varphi):=\int f(x)\varphi(x)\,dx

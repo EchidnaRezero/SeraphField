@@ -157,7 +157,7 @@ $$
 $$
 이다.
 
-더 일반적으로 measurable $f:E\to\mathbb R$ 에 대해
+더 일반적으로 measurable $f:E\to\mathbb R$ 가 $f\ge 0$ 이거나 $f\circ X$ 가 integrable이면
 $$
 \mathbb E[f(X)]
 =
@@ -253,7 +253,7 @@ $$
 
 ## (7) product measure and joint law
 
-$(X,Y)$ 의 law는 $\mathcal X\times\mathcal Y$ 위의 probability measure다. 독립이면
+measurable $X:(\Omega,\mathcal F)\to(E,\mathcal E)$, $Y:(\Omega,\mathcal F)\to(F,\mathcal H)$ 에 대해 $(X,Y)$ 의 law는 $(E\times F,\mathcal E\otimes\mathcal H)$ 위의 probability measure다. 독립이면
 $$
 \operatorname{Law}(X,Y)=\operatorname{Law}(X)\otimes\operatorname{Law}(Y)
 $$

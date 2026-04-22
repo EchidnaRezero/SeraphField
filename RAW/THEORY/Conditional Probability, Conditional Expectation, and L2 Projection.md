@@ -206,7 +206,9 @@ $$
 $$
 로 정의한다. 이는 $[0,1]$-valued $\mathcal G$-measurable random variable이다.
 
-조건부 확률을 숫자 $\mathbb P(A\mid B)$ 와 혼동하면 안 된다. 후자는 $\mathcal G=\sigma(B)$ 의 특수한 평균값이다.
+숫자 조건부 확률 $\mathbb P(A\mid B)=\mathbb P(A\cap B)/\mathbb P(B)$ 는 $\mathbb P(B)>0$ 일 때만 정의된다.
+
+조건부 확률을 숫자 $\mathbb P(A\mid B)$ 와 혼동하면 안 된다. $\mathbb E[\mathbf 1_A\mid\sigma(B)]$ 는 $\sigma(B)$-measurable random variable이고, $B$ 와 $B^c$ 위에서 각각 상수인 blockwise constant 함수다.
 
 ## (6) random variable에 대한 conditional expectation
 

@@ -21,6 +21,36 @@ slug: variational-objectives-and-noise-prediction
 
 # Variational Objectives and Noise Prediction
 
+## 전체상
+
+```mermaid
+flowchart TB
+    a["forward chain q(x0:T)"]
+    b["marginal likelihood pθ(x0)"]
+    c["ELBO / KL decomposition"]
+    d["posterior q(xt-1 | xt,x0)"]
+    e["Gaussian reverse pθ(xt-1 | xt)"]
+    f["ε-objective"]
+    g["x0 / v coordinates"]
+
+    a --> b
+    b --> c
+    c --> d
+    d --> e
+    e --> f
+    f --> g
+```
+
+## 각 층의 분기 포인트
+
+- `forward chain q(x0:T)`: noising chain을 latent variable model의 기준 law로 둔다.
+- `marginal likelihood pθ(x0)`: hidden states 적분이 어려워 직접 최적화가 막힌다.
+- `ELBO / KL decomposition`: likelihood 문제를 posterior matching 항들로 나눈다.
+- `posterior q(xt-1 | xt,x0)`: Gaussian closed form으로 reverse target을 계산한다.
+- `Gaussian reverse pθ(xt-1 | xt)`: 학습 가능한 reverse kernel family를 정한다.
+- `ε-objective`: mean matching을 noise coordinate의 squared loss로 바꾼다.
+- `x0 / v coordinates`: 같은 conditional expectation을 다른 좌표계로 읽는다.
+
 ## 문서 로드맵
 
 ```mermaid

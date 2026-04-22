@@ -200,7 +200,11 @@ $$
 를 만족한다. time-inhomogeneous case에서는
 
 $$
-\partial_t u(t,x)=L_tu(t,\cdot)(x)
+u(s,x)=P_{s,t}f(x),
+\qquad
+u(t,x)=f(x),
+\qquad
+-\partial_s u(s,x)=L_su(s,\cdot)(x)
 $$
 
 로 쓴다. 이것이 backward Kolmogorov equation이다.
@@ -238,7 +242,7 @@ $$
 
 ## (7) Weak Formulation
 
-measure-valued curve $(\mu_t)$가 forward equation의 해라는 것은 모든 test function $f\in C_c^\infty(E)$에 대해
+measure-valued curve $(\mu_t)$가 forward equation의 해라는 것은 모든 $f\in\mathcal D(L)$에 대해
 
 $$
 \frac{d}{dt}\int_E f\,d\mu_t

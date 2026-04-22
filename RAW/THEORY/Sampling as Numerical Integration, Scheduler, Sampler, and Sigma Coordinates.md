@@ -21,6 +21,35 @@ slug: sampling-as-numerical-integration-scheduler-sampler-and-sigma-coordinates
 
 # Sampling as Numerical Integration: Scheduler, Sampler, and Sigma Coordinates
 
+## 전체상
+
+```mermaid
+flowchart TB
+    C["continuous dynamics: PDE / SDE / ODE"]
+    F["exact flow map φ_{t,s}"]
+    G["coordinate grid: t, σ, log-SNR"]
+    Q["scheduler nodes"]
+    A["sampler update rule"]
+    N["discrete map Φ_n"]
+    I["integrator family"]
+
+    C --> F
+    F --> N
+    G --> Q
+    Q --> N
+    I --> A
+    A --> N
+```
+
+## 각 층의 분기 포인트
+
+- continuous level에서는 분포, 확률경로, deterministic path를 PDE, SDE, ODE로 구분한다.
+- flow-map level에서는 정확한 $\varphi_{t,s}$와 실제로 쓰는 이산 근사 $\Phi_n$를 나눈다.
+- coordinate level에서는 $t$, $\sigma$, log-SNR 중 어떤 좌표에서 grid를 잡는지 정한다.
+- scheduler level에서는 어떤 node sequence를 방문할지 정한다.
+- sampler level에서는 주어진 두 node 사이를 어떤 update rule로 건널지 정한다.
+- integrator level에서는 Euler, Heun, LMS, SDE step, DPM-Solver 계열의 차이를 비교한다.
+
 ## 문서 로드맵
 
 ```mermaid
@@ -182,7 +211,7 @@ $$
 $$
 X_{n+1}
 = X_n + f(X_n,t_n)\Delta t_n
-+ g(X_n,t_n)\Delta W_n
++ g(t_n)\Delta W_n
 $$
 
 꼴이 된다. 여기서 $\Delta W_n \sim \mathcal N(0,\Delta t_n)$다.

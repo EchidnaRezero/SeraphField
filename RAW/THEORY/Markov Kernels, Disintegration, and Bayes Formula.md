@@ -165,7 +165,7 @@ $$
 $$
 로 쓸 수 있다. 이것이 kernel 형태의 Bayes formula다.
 
-density가 존재하면 familiar한 분수꼴 공식으로 내려간다.
+density가 존재하면 familiar한 분수꼴 공식으로 내려간다. 이때 $p(x)$, $p(y\mid x)$, $p(y)$ 는 각각 선택한 dominating measure에 대한 density이며, 아래 식은 $p(y)>0$ 인 $y$ 에 대해, 보통 $\nu$-a.e. 의미로 읽는다.
 
 $$
 p(x\mid y)=\frac{p(y\mid x)p(x)}{p(y)}.

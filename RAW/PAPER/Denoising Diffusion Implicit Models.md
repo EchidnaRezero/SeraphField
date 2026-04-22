@@ -13,7 +13,7 @@ groups:
 series: diffusion-paper-foundations
 series_title: 확산모형 핵심 논문 읽기
 series_order: 2
-summary: DDIM를 학습 objective는 유지한 채 reverse trajectory만 재설계하는 논문으로 읽는 노트.
+summary: DDIM을 학습 objective는 유지한 채 reverse trajectory만 재설계하는 논문으로 읽는 노트.
 slug: denoising-diffusion-implicit-models
 ---
 

@@ -287,7 +287,7 @@ $$
 
 이 식이 자주 나오는 이유는 Gaussian family 안에서의 학습 문제가 mean과 covariance의 비교 문제로 환원되기 때문이다. 특히 covariance를 고정하면 핵심은 quadratic mean error만 남는다.
 
-$\mathcal N(m_1,\Sigma_1)$, $\mathcal N(m_2,\Sigma_2)$에 대해
+$\mathcal N(m_1,\Sigma_1)$, $\mathcal N(m_2,\Sigma_2)$가 nondegenerate Gaussian law, 즉 $\Sigma_1,\Sigma_2$ 가 positive definite인 경우
 
 $$
 D_{\mathrm{KL}}(\mathcal N_1\|\mathcal N_2)

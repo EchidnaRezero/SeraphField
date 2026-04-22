@@ -22,6 +22,39 @@ slug: vector-fields-continuity-equation-and-rectification
 
 # Vector Fields, Continuity Equation, Rectification
 
+## 전체상
+
+```mermaid
+flowchart TB
+    a["vector field v(x,t)"]
+    b["flow map φt,s"]
+    c["continuity equation"]
+    d["conditional path Xt"]
+    e["target velocity ut"]
+    f["flow matching loss"]
+    g["rectified transport"]
+    h["probability flow ODE"]
+
+    a --> b
+    b --> c
+    c --> d
+    d --> e
+    e --> f
+    f --> g
+    c --> h
+```
+
+## 각 층의 분기 포인트
+
+- `vector field v(x,t)`: local velocity law를 먼저 정한다.
+- `flow map φt,s`: local law가 point trajectory를 만든다.
+- `continuity equation`: point trajectory가 probability mass evolution으로 옮겨진다.
+- `conditional path Xt`: endpoint coupling 위에서 학습 target path를 정한다.
+- `target velocity ut`: path의 시간 미분을 matching target으로 쓴다.
+- `flow matching loss`: network velocity가 target velocity의 조건부 평균을 맞춘다.
+- `rectified transport`: 같은 endpoint를 더 straight한 path로 다시 잇는다.
+- `probability flow ODE`: continuity equation을 deterministic transport로 읽는다.
+
 ## 문서 로드맵
 
 ```mermaid
@@ -49,7 +82,7 @@ flowchart TB
 
 ## (1) time-dependent vector field and flow map
 
-$v:\mathbb R^d\times[0,1]\to\mathbb R^d$를 time-dependent Borel vector field라 하자. 초기값 $x_s$에 대해
+$v:\mathbb R^d\times[0,1]\to\mathbb R^d$를 time-dependent vector field라 하자. 단순히 Borel인 것만으로는 flow가 잘 정의되지 않으므로, 여기서는 $t$에 대해 measurable이고 $x$에 대해 local Lipschitz인 정도의 regularity를 가정한다. 초기값 $x_s$에 대해
 
 $$
 \dot x_t=v(x_t,t),\qquad t\in[s,1]
@@ -163,19 +196,19 @@ linear interpolation은 가장 단순한 기준 경로다.
 
 ## (6) rectification
 
-rectified flow의 핵심은 endpoint를 유지하면서 path geometry를 더 straight하게 만드는 것이다. straightness를
+rectified flow의 핵심은 endpoint를 유지하면서 path geometry를 더 straight하게 만드는 것이다. 이를 엄밀한 정의 하나로 고정하기보다는, 예를 들어 smooth path에 대한 curvature-like diagnostic
 
 $$
 \int_0^1 \mathbb E\|\ddot X_t\|^2\,dt
 $$
 
-또는 velocity variation
+또는 평균 속도 주변의 velocity variation
 
 $$
-\int_0^1 \mathbb E\|v_t(X_t)-\bar v\|^2\,dt
+\int_0^1 \mathbb E\left\|v_t(X_t)-\int_0^1 v_s(X_s)\,ds\right\|^2\,dt
 $$
 
-같은 functional로 볼 수 있다.
+같은 heuristic functional로 볼 수 있다.
 
 ### (6-a) 정의를 쉬운 말로 읽기
 

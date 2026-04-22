@@ -22,6 +22,33 @@ slug: score-functions-reverse-time-dynamics-and-probability-flow-ode
 
 # Score Functions, Reverse-Time Dynamics, and Probability Flow ODE
 
+## 전체상
+
+```mermaid
+flowchart TB
+    X["Itô SDE dX=f dt+g dW"]
+    P["density p_t / Fokker-Planck"]
+    S["score ∇ log p_t"]
+    R["reverse-time SDE"]
+    O["probability flow ODE"]
+    D["denoiser parametrization"]
+
+    X --> P
+    P --> S
+    S --> R
+    S --> O
+    R --> D
+    O --> D
+```
+
+## 각 층의 분기 포인트
+
+- path level에서는 forward Itô SDE가 sample path의 drift와 diffusion을 정한다.
+- density level에서는 generator의 adjoint가 $p_t$의 Fokker-Planck evolution을 정한다.
+- score level에서는 $\nabla\log p_t$가 density evolution을 역방향 dynamics에 넣을 수 있는 형태로 바꾼다.
+- dynamics level에서는 같은 marginal family를 reverse-time SDE와 probability flow ODE로 각각 읽는다.
+- parametrization level에서는 score를 실제 denoiser 출력과 연결한다.
+
 ## 문서 로드맵
 
 ```mermaid
@@ -86,6 +113,7 @@ $$
 L_t\varphi(x)
 =
 f(x,t)\cdot\nabla\varphi(x)
+\,+\,
 \frac12 g(t)^2\Delta\varphi(x)
 $$
 
@@ -103,7 +131,7 @@ $$
 
 를 만족한다.
 
-> 예시. drift가 없고 $g(t)=1$이면 $X_t=W_t$가 된다. 이 경우 diffusion term 하나만으로 density가 퍼진다.
+> 예시. drift가 없고 $g(t)=1$이면 $X_t=X_0+W_t$가 된다. 특히 $X_0=0$일 때만 $X_t=W_t$다. 이 경우 diffusion term 하나만으로 density가 퍼진다.
 
 ## (2) score function and adjoint
 
